@@ -75,3 +75,12 @@ HUB_ZONE_PATTERNS = [
 
 # Flame Elementium ConfigBaseId (primary currency)
 FE_CONFIG_BASE_ID = 100300
+
+# Proto names for non-loot inventory changes (trade house, recycling, skill management, etc.).
+# These update inventory (slot state) but should NOT create deltas or count as loot.
+EXCLUDED_PROTO_NAMES = frozenset({
+    "Push2", "XchgReceive", "ExchangeItem", "XchgRecall", "XchgForSale", "UnequipSkill"
+})
+
+# Proto names for map cost events (compass/beacon consumption).
+MAP_COST_PROTO_NAMES = frozenset({"Spv3Open", "ClimbTowerOpen"})

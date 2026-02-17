@@ -14,6 +14,7 @@ from titrack.core.models import (
 )
 from titrack.db.connection import Database
 from titrack.data.inventory import EXCLUDED_PAGES, get_gear_allowlist
+from titrack.parser.patterns import EXCLUDED_PROTO_NAMES, MAP_COST_PROTO_NAMES
 
 
 class Repository:
@@ -299,7 +300,7 @@ class Repository:
 
     def get_run_summary(self, run_id: int, include_excluded: bool = False) -> dict[int, int]:
         """
-        Get aggregated delta per item for a run (excludes map costs).
+        Get aggregated delta per item for a run (excludes map costs and non-loot protos).
 
         Args:
             run_id: The run ID to get summary for.
@@ -309,14 +310,20 @@ class Repository:
         Returns:
             Dict mapping config_base_id -> total delta
         """
-        # Always exclude map costs (Spv3Open, ClimbTowerOpen) from loot summary
+        # Exclude map costs AND non-loot protos (trade house, recycling, skill management)
+        # The collector prevents these deltas from being created, but this is defense-in-depth
+        # to handle any legacy data from before those checks were added.
+        all_excluded_protos = EXCLUDED_PROTO_NAMES | MAP_COST_PROTO_NAMES
+        proto_placeholders = ",".join("?" * len(all_excluded_protos))
+        proto_params = list(all_excluded_protos)
+
         if include_excluded or not EXCLUDED_PAGES:
             rows = self.db.fetchall(
-                """SELECT config_base_id, SUM(delta) as total_delta
+                f"""SELECT config_base_id, SUM(delta) as total_delta
                    FROM item_deltas
-                   WHERE run_id = ? AND (proto_name IS NULL OR proto_name NOT IN ('Spv3Open', 'ClimbTowerOpen'))
+                   WHERE run_id = ? AND (proto_name IS NULL OR proto_name NOT IN ({proto_placeholders}))
                    GROUP BY config_base_id""",
-                (run_id,),
+                (run_id, *proto_params),
             )
         else:
             params: list = [run_id]
@@ -325,9 +332,9 @@ class Repository:
                 f"""SELECT config_base_id, SUM(delta) as total_delta
                    FROM item_deltas
                    WHERE run_id = ?{clause}
-                   AND (proto_name IS NULL OR proto_name NOT IN ('Spv3Open', 'ClimbTowerOpen'))
+                   AND (proto_name IS NULL OR proto_name NOT IN ({proto_placeholders}))
                    GROUP BY config_base_id""",
-                tuple(params),
+                tuple(params) + tuple(proto_params),
             )
         return {row["config_base_id"]: row["total_delta"] for row in rows}
 
@@ -809,12 +816,13 @@ class Repository:
             - total_cost_fe: Sum of priced items only (absolute value)
             - unpriced_config_ids: List of items without known prices
         """
+        cost_placeholders = ",".join("?" * len(MAP_COST_PROTO_NAMES))
         rows = self.db.fetchall(
-            """SELECT config_base_id, SUM(delta) as total_delta
+            f"""SELECT config_base_id, SUM(delta) as total_delta
                FROM item_deltas
-               WHERE run_id = ? AND proto_name IN ('Spv3Open', 'ClimbTowerOpen')
+               WHERE run_id = ? AND proto_name IN ({cost_placeholders})
                GROUP BY config_base_id""",
-            (run_id,),
+            (run_id, *MAP_COST_PROTO_NAMES),
         )
         summary = {row["config_base_id"]: row["total_delta"] for row in rows}
 
@@ -1064,14 +1072,18 @@ class Repository:
 
         # Build query with appropriate filters
         # Only include items picked up during map runs (run_id IS NOT NULL)
-        base_query = """
+        # Exclude map costs AND non-loot protos (trade house, recycling, etc.)
+        all_excluded_protos = EXCLUDED_PROTO_NAMES | MAP_COST_PROTO_NAMES
+        proto_placeholders = ",".join("?" * len(all_excluded_protos))
+
+        base_query = f"""
             SELECT config_base_id, SUM(delta) as total_quantity
             FROM item_deltas
             WHERE run_id IS NOT NULL
-            AND (proto_name IS NULL OR proto_name NOT IN ('Spv3Open', 'ClimbTowerOpen'))
+            AND (proto_name IS NULL OR proto_name NOT IN ({proto_placeholders}))
         """
 
-        params: list = []
+        params: list = list(all_excluded_protos)
 
         # Filter by season/player
         if season_id is not None:
@@ -1237,10 +1249,11 @@ class Repository:
             return 0.0
 
         # Get all map cost deltas (Spv3Open/ClimbTowerOpen events with run_id)
-        base_query = """SELECT config_base_id, SUM(delta) as total_delta
+        cost_placeholders = ",".join("?" * len(MAP_COST_PROTO_NAMES))
+        base_query = f"""SELECT config_base_id, SUM(delta) as total_delta
                    FROM item_deltas
-                   WHERE run_id IS NOT NULL AND proto_name IN ('Spv3Open', 'ClimbTowerOpen')"""
-        params: list = []
+                   WHERE run_id IS NOT NULL AND proto_name IN ({cost_placeholders})"""
+        params: list = list(MAP_COST_PROTO_NAMES)
 
         if season_id is not None:
             base_query += " AND (season_id IS NULL OR season_id = ?)"

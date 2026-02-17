@@ -59,6 +59,9 @@ def get_stats_history(
     # Load ignored state
     ignored_run_ids = repo.get_ignored_run_ids()
 
+    # Check if map costs are enabled (to match stats header behavior)
+    map_costs_enabled = repo.get_setting("map_costs_enabled") == "true"
+
     # Calculate cumulative value at each run completion
     cumulative_value_points = []
     cumulative_fe_points = []
@@ -79,6 +82,10 @@ def get_stats_history(
         if ignored_items:
             ignored_value = repo.get_ignored_item_value(run.id, ignored_items)
             total_value -= ignored_value
+        # Subtract map costs if enabled
+        if map_costs_enabled:
+            _, cost_value, _ = repo.get_run_cost(run.id)
+            total_value -= cost_value
         run_values[run.id] = (fe_gained, total_value)
 
     for run in runs:

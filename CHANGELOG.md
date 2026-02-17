@@ -5,6 +5,17 @@ All notable changes to TITrack will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-02-17
+
+### Added
+- **Inventory Tab Filter**: Filter inventory by in-game tab (All, Gear, Skill, Commodity, Others) via a filter icon next to the "Hide Items" button. Net worth always reflects the full inventory regardless of filter selection.
+
+### Fixed
+- **Charts not subtracting map costs**: Cumulative Value and FE/Hour charts were showing gross loot values instead of net values when Map Costs setting was enabled, causing them to be inflated compared to the stats header
+- **Trade house events affecting chart values**: Run value calculations (used by charts, stats, and loot report) now exclude trade house proto names (`Push2`, `XchgReceive`, `ExchangeItem`, `XchgRecall`, `XchgForSale`) and skill management (`UnequipSkill`) at the SQL query level as defense-in-depth, preventing any legacy deltas from inflating values
+
+---
+
 ## [0.5.2] - 2026-02-16
 
 ### Added

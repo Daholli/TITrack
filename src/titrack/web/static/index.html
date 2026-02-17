@@ -124,7 +124,21 @@
             </div>
 
             <section class="panel">
-                <h2>Current Inventory <button class="hide-items-btn" id="hide-items-btn" onclick="openHideItemsModal()">Hide Items</button></h2>
+                <h2>Current Inventory
+                    <button class="hide-items-btn" id="hide-items-btn" onclick="openHideItemsModal()">Hide Items</button>
+                    <span class="inv-filter-wrap">
+                        <button class="inv-filter-btn" id="inv-filter-btn" onclick="toggleInvFilterMenu()" title="Filter by tab">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        </button>
+                        <div class="inv-filter-menu hidden" id="inv-filter-menu">
+                            <button class="inv-filter-option active" data-tab="" onclick="filterInventoryTab(this)">All</button>
+                            <button class="inv-filter-option" data-tab="100" onclick="filterInventoryTab(this)">Gear</button>
+                            <button class="inv-filter-option" data-tab="101" onclick="filterInventoryTab(this)">Skill</button>
+                            <button class="inv-filter-option" data-tab="102" onclick="filterInventoryTab(this)">Commodity</button>
+                            <button class="inv-filter-option" data-tab="103" onclick="filterInventoryTab(this)">Others</button>
+                        </div>
+                    </span>
+                </h2>
                 <table id="inventory-table">
                     <thead>
                         <tr>

@@ -1834,6 +1834,77 @@ tr.nightmare .zone-name {
     margin-left: 6px;
 }
 
+/* Inventory Tab Filter */
+.inv-filter-wrap {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+}
+
+.inv-filter-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.inv-filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.inv-filter-btn.filtered {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.inv-filter-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px var(--shadow);
+    z-index: 100;
+    min-width: 120px;
+    padding: 4px 0;
+}
+
+.inv-filter-menu.hidden {
+    display: none;
+}
+
+.inv-filter-option {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+
+.inv-filter-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.inv-filter-option.active {
+    color: var(--accent);
+}
+
 /* Micro Overlay Stats Picker */
 .micro-stats-picker {
     margin-top: 8px;

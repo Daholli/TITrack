@@ -91,6 +91,7 @@ class InventoryItem(BaseModel):
     config_base_id: int
     name: str
     quantity: int
+    page_id: int = 0
     icon_url: Optional[str] = None
     price_fe: Optional[float] = None
     total_value_fe: Optional[float] = None

@@ -43,6 +43,7 @@ let updateCheckInterval = null;
 // Inventory sorting state
 let inventorySortBy = 'value';
 let inventorySortOrder = 'desc';
+let inventoryTabFilter = ''; // '' = all, '100' = gear, '101' = skill, '102' = commodity, '103' = misc
 
 // Hidden items state
 let hiddenItemIds = new Set();
@@ -80,7 +81,11 @@ async function fetchActiveRun() {
 }
 
 async function fetchInventory(sortBy = inventorySortBy, sortOrder = inventorySortOrder) {
-    return fetchJson(`/inventory?sort_by=${sortBy}&sort_order=${sortOrder}`);
+    let url = `/inventory?sort_by=${sortBy}&sort_order=${sortOrder}`;
+    if (inventoryTabFilter) {
+        url += `&tab=${inventoryTabFilter}`;
+    }
+    return fetchJson(url);
 }
 
 async function fetchStatsHistory(hours = 24) {
@@ -2423,6 +2428,29 @@ async function sortInventory(field) {
     renderInventory(inventory, true);
 }
 
+function toggleInvFilterMenu() {
+    document.getElementById('inv-filter-menu').classList.toggle('hidden');
+}
+
+async function filterInventoryTab(btn) {
+    inventoryTabFilter = btn.dataset.tab;
+
+    // Update active state
+    document.querySelectorAll('.inv-filter-option').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Highlight the filter icon when a non-All tab is selected
+    document.getElementById('inv-filter-btn').classList.toggle('filtered', !!inventoryTabFilter);
+
+    // Close the menu
+    document.getElementById('inv-filter-menu').classList.add('hidden');
+
+    // Fetch and render with new filter
+    const inventory = await fetchInventory();
+    lastInventoryData = inventory;
+    renderInventory(inventory, true);
+}
+
 function updateSortIndicators() {
     // Remove active class from all sortable headers
     document.querySelectorAll('th.sortable').forEach(th => {
@@ -2799,6 +2827,14 @@ async function exitApp() {
 document.addEventListener('DOMContentLoaded', async () => {
     // Set initial sort indicators
     updateSortIndicators();
+
+    // Close inventory filter menu on outside click
+    document.addEventListener('click', (e) => {
+        const wrap = document.querySelector('.inv-filter-wrap');
+        if (wrap && !wrap.contains(e.target)) {
+            document.getElementById('inv-filter-menu').classList.add('hidden');
+        }
+    });
 
     // Check if running in browser fallback mode
     await checkBrowserMode();

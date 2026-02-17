@@ -1,6 +1,7 @@
 """Inventory API routes."""
 
 from enum import Enum
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 
@@ -59,16 +60,20 @@ def get_inventory(
     sort_by: SortField = Query(SortField.VALUE, description="Field to sort by"),
     sort_order: SortOrder = Query(SortOrder.DESC, description="Sort order"),
     include_hidden: bool = Query(False, description="Include hidden items in the list"),
+    tab: Optional[int] = Query(None, description="Filter by inventory tab (page_id: 100=Gear, 101=Skill, 102=Commodity, 103=Misc)"),
     repo: Repository = Depends(get_repository),
 ) -> InventoryResponse:
     """Get current inventory state."""
     states = repo.get_all_slot_states()
 
-    # Aggregate by item
+    # Aggregate by item, tracking page_id for each config_base_id
     totals: dict[int, int] = {}
+    page_ids: dict[int, int] = {}  # config_base_id -> page_id (first seen)
     for state in states:
         if state.num > 0:
             totals[state.config_base_id] = totals.get(state.config_base_id, 0) + state.num
+            if state.config_base_id not in page_ids:
+                page_ids[state.config_base_id] = state.page_id
 
     # Get hidden items for display filtering and optionally for net worth exclusion
     hidden_ids_all = repo.get_hidden_items()
@@ -110,11 +115,16 @@ def get_inventory(
         if config_id in hidden_ids:
             continue
 
+        # Apply tab filter (filter display only, net worth is always from all items)
+        if tab is not None and page_ids.get(config_id) != tab:
+            continue
+
         items.append(
             InventoryItem(
                 config_base_id=config_id,
                 name=item.name_en if item else f"Unknown {config_id}",
                 quantity=quantity,
+                page_id=page_ids.get(config_id, 0),
                 icon_url=item.icon_url if item else None,
                 price_fe=price_fe,
                 total_value_fe=total_value,

@@ -31,13 +31,8 @@ from titrack.parser.exchange_parser import (
     calculate_reference_price,
 )
 from titrack.parser.player_parser import PlayerInfo, get_effective_player_id
+from titrack.parser.patterns import EXCLUDED_PROTO_NAMES, MAP_COST_PROTO_NAMES
 from titrack.data.inventory import EXCLUDED_PAGES, is_gear_excluded
-
-# Proto names for non-loot inventory changes (trade house, recycling, skill management, etc.).
-# These update inventory (slot state) but should NOT create deltas
-# because they are not map loot.
-EXCLUDED_PROTO_NAMES = {"Push2", "XchgReceive", "ExchangeItem", "XchgRecall", "XchgForSale", "UnequipSkill"}
-MAP_COST_PROTO_NAMES = {"Spv3Open", "ClimbTowerOpen"}
 
 
 class Collector:
