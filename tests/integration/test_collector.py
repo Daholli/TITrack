@@ -7,12 +7,12 @@ from pathlib import Path
 import pytest
 
 from titrack.collector.collector import Collector
-from titrack.core.models import ItemDelta, Run
+from titrack.core.models import ItemDelta, ParsedPlayerDataEvent, Run
 from titrack.data.inventory import set_gear_allowlist
 from titrack.db.connection import Database
 from titrack.db.repository import Repository
 from titrack.parser.patterns import FE_CONFIG_BASE_ID
-from titrack.parser.player_parser import PlayerInfo
+from titrack.parser.player_parser import PlayerInfo, get_effective_player_id
 
 
 # Test player info for setting player context
@@ -539,3 +539,88 @@ class TestCollectorIntegration:
         # Only the allowlisted item should create a delta
         assert len(deltas_received) == 1
         assert deltas_received[0].config_base_id == 999001
+
+    def test_relog_same_character_preserves_player_id(self, test_env):
+        """Test that relogging the same character doesn't change effective player ID.
+
+        Regression test: When the game relogs, Name+SeasonId arrive before PlayerId
+        in the log stream. Without the fix, this would create a mismatched effective
+        ID (e.g. '1_TestPlayer' vs 'test_player_123'), causing all data to appear lost.
+        """
+        db = test_env["db"]
+        tmpdir = test_env["tmpdir"]
+        repo = Repository(db)
+        repo.set_player_context(TEST_PLAYER_INFO.season_id, TEST_PLAYER_INFO.player_id)
+
+        # Set up a map run so we have data to verify isn't lost
+        log_content = """\
+[2026.01.28-10.00.00:000][  0]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 500
+[2026.01.28-10.00.05:000][  0]GameLog: Display: [Game] SceneLevelMgr@ OpenMainWorld END! InMainLevelPath = /Game/Art/Maps/02KD/KD_YuanSuKuangDong000/KD_YuanSuKuangDong000
+[2026.01.28-10.00.30:000][  0]GameLog: Display: [Game] ItemChange@ ProtoName=PickItems start
+[2026.01.28-10.00.30:001][  0]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 600
+[2026.01.28-10.00.30:002][  0]GameLog: Display: [Game] ItemChange@ ProtoName=PickItems end
+[2026.01.28-10.05.00:000][  0]GameLog: Display: [Game] SceneLevelMgr@ OpenMainWorld END! InMainLevelPath = /Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200
+"""
+        log_path = tmpdir / "relog_test.log"
+        log_path.write_text(log_content)
+
+        collector = Collector(
+            db=db,
+            log_path=log_path,
+            player_info=TEST_PLAYER_INFO,
+        )
+        collector.initialize()
+        collector.process_file(from_beginning=True)
+
+        # Verify we have a run
+        runs = repo.get_recent_runs(limit=10)
+        map_runs = [r for r in runs if not r.is_hub]
+        assert len(map_runs) == 1
+
+        # Simulate relog: Name + SeasonId arrive first WITHOUT PlayerId
+        # This is the exact race condition that caused the bug
+        ts = datetime(2026, 1, 28, 10, 10, 0)
+        collector._handle_player_data_event(
+            ParsedPlayerDataEvent(name="TestPlayer", season_id=1), ts
+        )
+
+        # Player ID should NOT have changed
+        assert collector._player_id == TEST_PLAYER_INFO.player_id
+
+        # Data should still be visible
+        runs_after = repo.get_recent_runs(limit=10)
+        map_runs_after = [r for r in runs_after if not r.is_hub]
+        assert len(map_runs_after) == 1
+
+    def test_relog_different_character_switches_context(self, test_env):
+        """Test that logging into a different character properly switches context."""
+        db = test_env["db"]
+        tmpdir = test_env["tmpdir"]
+        repo = Repository(db)
+        repo.set_player_context(TEST_PLAYER_INFO.season_id, TEST_PLAYER_INFO.player_id)
+
+        log_content = """\
+[2026.01.28-10.00.00:000][  0]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 500
+"""
+        log_path = tmpdir / "switch_char.log"
+        log_path.write_text(log_content)
+
+        collector = Collector(
+            db=db,
+            log_path=log_path,
+            player_info=TEST_PLAYER_INFO,
+        )
+        collector.initialize()
+        collector.process_file(from_beginning=True)
+
+        # Simulate logging into a DIFFERENT character (different name)
+        ts = datetime(2026, 1, 28, 10, 10, 0)
+        collector._handle_player_data_event(
+            ParsedPlayerDataEvent(name="OtherPlayer", season_id=1), ts
+        )
+
+        # Should have switched to new player context
+        new_expected_id = get_effective_player_id(
+            PlayerInfo(name="OtherPlayer", level=0, season_id=1, hero_id=0)
+        )
+        assert collector._player_id == new_expected_id

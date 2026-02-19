@@ -1200,18 +1200,16 @@ def _serve_with_window(args: argparse.Namespace, settings: Settings, logger, sho
 
                 # Validate position is on-screen (handles disconnected monitors)
                 try:
-                    user32 = ctypes.windll.user32
-                    # Virtual screen spans all monitors; divide by DPI scale
-                    # to match saved logical coordinates
-                    sl = user32.GetSystemMetrics(76) / _dpi_scale   # SM_XVIRTUALSCREEN
-                    st = user32.GetSystemMetrics(77) / _dpi_scale   # SM_YVIRTUALSCREEN
-                    sr = sl + user32.GetSystemMetrics(78) / _dpi_scale  # + SM_CXVIRTUALSCREEN
-                    sb = st + user32.GetSystemMetrics(79) / _dpi_scale  # + SM_CYVIRTUALSCREEN
-
-                    if not (saved_x >= sl and saved_x < sr - 100 and
-                            saved_y >= st and saved_y < sb - 100):
-                        logger.info(f"Window position ({saved_x},{saved_y}) is off-screen "
-                                    f"(virtual screen: {sl},{st} to {sr},{sb}), resetting to center")
+                    import ctypes.wintypes
+                    class POINT(ctypes.Structure):
+                        _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+                    # Check a point 50px inside the window to avoid the shadow
+                    # area that maximized windows extend beyond monitor edges
+                    MONITOR_DEFAULTTONULL = 0
+                    pt = POINT(int(saved_x + 50), int(saved_y + 50))
+                    monitor = ctypes.windll.user32.MonitorFromPoint(pt, MONITOR_DEFAULTTONULL)
+                    if not monitor:
+                        logger.info(f"Window position ({saved_x},{saved_y}) is off-screen, resetting to center")
                         saved_x, saved_y = None, None
                 except Exception:
                     pass

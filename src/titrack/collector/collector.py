@@ -173,18 +173,34 @@ class Collector:
         Returns:
             True if player changed and context was updated, False otherwise.
         """
+        # Check if player actually changed
+        old_name = self._player_info.name if self._player_info else None
+        new_name = new_player_info.name
+        new_season_id = new_player_info.season_id
+
+        # If new data has no player_id but old context does, and name+season match,
+        # carry forward the known player_id. This prevents false player-change detection
+        # during relog when Name+SeasonId arrive before PlayerId in the log stream.
+        if (
+            not new_player_info.player_id
+            and self._player_info
+            and self._player_info.player_id
+            and new_name == old_name
+            and new_season_id == self._season_id
+        ):
+            new_player_info = PlayerInfo(
+                name=new_player_info.name,
+                level=new_player_info.level,
+                season_id=new_player_info.season_id,
+                hero_id=new_player_info.hero_id,
+                player_id=self._player_info.player_id,
+            )
+
         # Get effective player IDs for comparison
         old_effective_id = self._player_id
         new_effective_id = get_effective_player_id(new_player_info)
 
-        # Check if player actually changed
-        old_season_id = self._season_id
-        old_name = self._player_info.name if self._player_info else None
-        new_season_id = new_player_info.season_id
-        new_name = new_player_info.name
-
         # Consider it the same player if effective player_id matches
-        # (this now incorporates season + name when actual player_id is unavailable)
         same_player = old_effective_id == new_effective_id
 
         if same_player:

@@ -5,6 +5,14 @@ All notable changes to TITrack will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Relog no longer clears run data**: Fixed race condition where relogging the same character caused all runs and stats to disappear. The game writes Name, SeasonId, and PlayerId on separate log lines; the collector was triggering a player change before PlayerId arrived, creating a mismatched identity that hid all existing data. Data was never deleted but became invisible until app restart. Bug existed since v0.2.8 (multi-character support).
+- **Window position on secondary/portrait monitors**: Fixed bounds check incorrectly rejecting saved window positions for maximized windows on secondary monitors. Maximized windows on Windows 10/11 extend ~8px beyond monitor edges (shadow area), which the old virtual-screen math rejected as "off-screen". Also fixed DPI double-division that could reject valid positions at >100% scaling. Now uses `MonitorFromPoint` Win32 API for reliable multi-monitor detection.
+
+---
+
 ## [0.5.4] - 2026-02-18
 
 ### Added

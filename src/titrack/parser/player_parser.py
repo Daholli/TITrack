@@ -230,8 +230,9 @@ def parse_game_log(log_path: Path, from_end: bool = True) -> Optional[PlayerInfo
                     if player_id is None and "player_id" in parsed:
                         player_id = parsed["player_id"]
 
-                    # Stop once we have essential data
-                    if name and season_id:
+                    # Stop once we have essential data including player_id
+                    # (player_id is critical for stable data isolation)
+                    if name and season_id and player_id:
                         break
 
                 # If not found in tail, try reading from the beginning
