@@ -5,6 +5,13 @@ All notable changes to TITrack will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Hidden items lost between sessions**: Fixed player identity inconsistency that could cause hidden items, ignored runs, and ignored report items to become inaccessible across app restarts. When the game log was missing PlayerId (e.g., after log rotation), the app used a name-based fallback ID that differed from the actual player ID used in previous sessions. Now persists the known player ID mapping in settings and automatically migrates per-player data when the ID format changes.
+
+---
+
 ## [0.5.5] - 2026-02-18
 
 ### Fixed

@@ -90,7 +90,10 @@ class Collector:
         self._player_id: Optional[str] = get_effective_player_id(player_info)
 
         # Set repository player context for filtered queries
-        self.repository.set_player_context(self._season_id, self._player_id)
+        player_name = player_info.name if player_info else None
+        self.repository.set_player_context(
+            self._season_id, self._player_id, player_name=player_name
+        )
 
         # Track pending player data from streaming log (for character change detection)
         self._pending_player_data: dict[str, any] = {}
@@ -216,7 +219,9 @@ class Collector:
         self._player_id = new_effective_id
 
         # Update repository context
-        self.repository.set_player_context(self._season_id, self._player_id)
+        self.repository.set_player_context(
+            self._season_id, self._player_id, player_name=new_name
+        )
 
         # End any active run from the old character
         ended_run = self.run_segmenter.force_end_current_run()

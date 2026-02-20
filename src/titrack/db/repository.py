@@ -26,10 +26,61 @@ class Repository:
         self._current_season_id: Optional[int] = None
         self._current_player_id: Optional[str] = None
 
-    def set_player_context(self, season_id: Optional[int], player_id: Optional[str]) -> None:
-        """Set the current player context for filtering queries."""
+    def set_player_context(
+        self,
+        season_id: Optional[int],
+        player_id: Optional[str],
+        player_name: Optional[str] = None,
+    ) -> None:
+        """Set the current player context for filtering queries.
+
+        If player_id is an actual player ID (not a name-based fallback) and
+        player_name is provided, saves the mapping so future sessions can
+        resolve the same player even when PlayerId is missing from the game log.
+        Also migrates any per-player data stored under the name-based fallback.
+        """
         self._current_season_id = season_id
         self._current_player_id = player_id
+
+        # Persist player_id mapping and migrate data from name-based fallback
+        if player_id and player_name and season_id is not None:
+            fallback_id = f"{season_id}_{player_name}"
+            if player_id != fallback_id:
+                # Save mapping so future sessions can resolve this player
+                self.set_setting(
+                    f"known_player_id_{season_id}_{player_name}", player_id
+                )
+                # Migrate any per-player data stored under the fallback key
+                self._migrate_player_data(fallback_id, player_id)
+
+    def _migrate_player_data(self, old_id: str, new_id: str) -> None:
+        """Migrate per-player settings data from old_id to new_id."""
+        tables = [
+            "hidden_items",
+            "ignored_runs",
+            "ignored_run_items",
+            "ignored_report_items",
+        ]
+        with self.db.transaction() as cursor:
+            for table in tables:
+                cursor.execute(
+                    f"SELECT COUNT(*) as cnt FROM {table} WHERE player_id = ?",
+                    (old_id,),
+                )
+                if cursor.fetchone()[0] > 0:
+                    # Move rows, ignoring PK conflicts (data already exists under new_id)
+                    cursor.execute(
+                        f"UPDATE OR IGNORE {table} SET player_id = ? WHERE player_id = ?",
+                        (new_id, old_id),
+                    )
+                    # Clean up any leftover rows under old_id (from PK conflicts)
+                    cursor.execute(
+                        f"DELETE FROM {table} WHERE player_id = ?", (old_id,)
+                    )
+
+    def lookup_player_id(self, season_id: int, player_name: str) -> Optional[str]:
+        """Look up a previously saved actual player_id for a name+season combo."""
+        return self.get_setting(f"known_player_id_{season_id}_{player_name}")
 
     def has_player_context(self) -> bool:
         """Return True if a player context has been set."""

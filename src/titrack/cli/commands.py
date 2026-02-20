@@ -24,6 +24,31 @@ from titrack.parser.player_parser import get_enter_log_path, get_effective_playe
 from titrack.sync.manager import SyncManager
 
 
+def _resolve_player_id(player_info: Optional[PlayerInfo], repo: Repository, logger) -> Optional[PlayerInfo]:
+    """Fill in missing player_id from saved settings if name+season are known.
+
+    When the game log is rotated, PlayerId may not be present yet.  If a
+    previous session already saved the mapping we can reuse it so the
+    effective player ID stays consistent across restarts.
+    """
+    if player_info is None:
+        return None
+    if player_info.player_id:
+        return player_info  # already have actual player_id
+    if player_info.name and player_info.season_id is not None:
+        saved = repo.lookup_player_id(player_info.season_id, player_info.name)
+        if saved:
+            logger.info(f"Resolved player_id from saved mapping: {saved}")
+            return PlayerInfo(
+                name=player_info.name,
+                level=player_info.level,
+                season_id=player_info.season_id,
+                hero_id=player_info.hero_id,
+                player_id=saved,
+            )
+    return player_info
+
+
 def print_delta(delta: ItemDelta, repo: Repository) -> None:
     """Print a delta to console."""
     item_name = repo.get_item_name(delta.config_base_id)
@@ -506,6 +531,9 @@ def _serve_browser_mode(args: argparse.Namespace, settings: Settings, logger, sh
 
             collector_repo = Repository(collector_db)
 
+            # Resolve player_id from saved mapping if missing from log
+            player_info = _resolve_player_id(player_info, collector_repo, logger)
+
             # Initialize sync manager (uses collector's DB connection)
             # Don't set season context yet - wait for player detection from live log
             sync_manager = SyncManager(collector_db)
@@ -579,7 +607,8 @@ def _serve_browser_mode(args: argparse.Namespace, settings: Settings, logger, sh
                     effective_id = get_effective_player_id(new_player_info)
                     app.state.repo.set_player_context(
                         new_player_info.season_id,
-                        effective_id
+                        effective_id,
+                        player_name=new_player_info.name,
                     )
                 # Update sync manager season context
                 if hasattr(app.state, 'sync_manager') and app.state.sync_manager:
@@ -952,6 +981,9 @@ def _serve_with_window(args: argparse.Namespace, settings: Settings, logger, sho
 
             collector_repo = Repository(collector_db)
 
+            # Resolve player_id from saved mapping if missing from log
+            player_info = _resolve_player_id(player_info, collector_repo, logger)
+
             sync_manager = SyncManager(collector_db)
             sync_manager.initialize()
 
@@ -1020,7 +1052,8 @@ def _serve_with_window(args: argparse.Namespace, settings: Settings, logger, sho
                     effective_id = get_effective_player_id(new_player_info)
                     app.state.repo.set_player_context(
                         new_player_info.season_id,
-                        effective_id
+                        effective_id,
+                        player_name=new_player_info.name,
                     )
                 if hasattr(app.state, 'sync_manager') and app.state.sync_manager:
                     app.state.sync_manager.set_season_context(new_player_info.season_id)

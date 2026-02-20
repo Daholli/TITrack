@@ -56,7 +56,9 @@ def create_app(
     repo = Repository(db)
     if player_info:
         effective_id = get_effective_player_id(player_info)
-        repo.set_player_context(player_info.season_id, effective_id)
+        repo.set_player_context(
+            player_info.season_id, effective_id, player_name=player_info.name
+        )
 
     # Dependency override for repository injection
     def get_repository() -> Repository:

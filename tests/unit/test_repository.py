@@ -381,6 +381,67 @@ class TestHiddenItemsRepository:
         assert repo2.get_hidden_items() == {200001}
 
 
+    def test_hidden_items_migrate_on_player_context(self, db):
+        """Hidden items stored under name-based fallback are migrated when actual player_id is set."""
+        # Simulate old session: hidden items stored under name-based fallback
+        repo = Repository(db)
+        fallback_id = "1301_MyChar"
+        repo.set_player_context(season_id=1301, player_id=fallback_id)
+        repo.set_hidden_items({100300, 200001})
+        assert repo.get_hidden_items() == {100300, 200001}
+
+        # Simulate new session: actual player_id discovered, name provided
+        repo2 = Repository(db)
+        repo2.set_player_context(
+            season_id=1301, player_id="abc123", player_name="MyChar"
+        )
+
+        # Hidden items should be migrated to the new player_id
+        assert repo2.get_hidden_items() == {100300, 200001}
+
+        # Old fallback key should be empty
+        repo_old = Repository(db)
+        repo_old.set_player_context(season_id=1301, player_id=fallback_id)
+        assert repo_old.get_hidden_items() == set()
+
+    def test_player_id_lookup_from_saved_mapping(self, db):
+        """Saved player_id mapping can be looked up for future sessions."""
+        repo = Repository(db)
+        # Setting context with actual player_id and player_name saves the mapping
+        repo.set_player_context(
+            season_id=1301, player_id="abc123", player_name="MyChar"
+        )
+
+        # A new repo can look up the saved mapping
+        repo2 = Repository(db)
+        saved = repo2.lookup_player_id(1301, "MyChar")
+        assert saved == "abc123"
+
+    def test_player_id_lookup_missing(self, db):
+        """Lookup returns None when no mapping exists."""
+        repo = Repository(db)
+        assert repo.lookup_player_id(1301, "Unknown") is None
+
+    def test_ignored_runs_migrate_with_hidden_items(self, db):
+        """Ignored runs/items also migrate when player_id changes."""
+        repo = Repository(db)
+        fallback_id = "1301_MyChar"
+        repo.set_player_context(season_id=1301, player_id=fallback_id)
+        repo.set_hidden_items({100300})
+        repo.set_run_ignored(1, True)
+        repo.set_ignored_report_items({200001})
+
+        # Switch to actual player_id
+        repo2 = Repository(db)
+        repo2.set_player_context(
+            season_id=1301, player_id="abc123", player_name="MyChar"
+        )
+
+        assert repo2.get_hidden_items() == {100300}
+        assert 1 in repo2.get_ignored_run_ids()
+        assert repo2.get_ignored_report_items() == {200001}
+
+
 class TestGearAllowlistRepository:
     """Tests for gear allowlist filtering in repository queries."""
 
