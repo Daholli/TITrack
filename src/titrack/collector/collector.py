@@ -523,10 +523,13 @@ class Collector:
             )
 
             # Process potential player change
-            changed = self._process_player_change(new_player_info)
-            if changed:
-                # Clear pending data after successful change
-                self._pending_player_data = {}
+            # Note: do NOT clear pending data after a change — later fields
+            # in the same batch (especially PlayerId) need to accumulate and
+            # trigger a follow-up _process_player_change so the effective ID
+            # is corrected from the name-based fallback to the actual player ID.
+            # The is_new_batch reset at the top handles separation between
+            # different login batches.
+            self._process_player_change(new_player_info)
 
     def _cleanup_stale_pending_searches(self, current_time: datetime) -> None:
         """Remove pending price searches older than TTL."""

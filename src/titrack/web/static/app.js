@@ -2493,6 +2493,10 @@ async function refreshAll(forceRender = false) {
             renderPlayer(player);
             lastPlayerHash = playerHash;
 
+            // Reload per-player data when player changes
+            hiddenItemIds = await fetchHiddenItems();
+            updateHideItemsButton();
+
             // Auto-close no-character modal when character is detected
             if (player && noCharacterModalShown) {
                 closeNoCharacterModal();

@@ -624,3 +624,84 @@ class TestCollectorIntegration:
             PlayerInfo(name="OtherPlayer", level=0, season_id=1, hero_id=0)
         )
         assert collector._player_id == new_expected_id
+
+    def test_no_player_startup_then_detection_uses_actual_player_id(self, test_env):
+        """Test that when app starts with no player and then detects one via live log,
+        the actual PlayerId is used (not the name-based fallback).
+
+        Regression test: Player data fields arrive as separate log lines. Name+SeasonId
+        trigger an initial detection with fallback ID, then PlayerId arrives and should
+        correct the effective ID. Previously, pending data was cleared after the first
+        detection, causing PlayerId to be lost.
+        """
+        db = test_env["db"]
+        tmpdir = test_env["tmpdir"]
+        repo = Repository(db)
+
+        # Create a run under the actual player_id (simulating previous session data)
+        repo.set_player_context(
+            TEST_PLAYER_INFO.season_id,
+            TEST_PLAYER_INFO.player_id,
+            player_name=TEST_PLAYER_INFO.name,
+        )
+        repo.insert_run(Run(
+            id=None,
+            zone_signature="test_zone",
+            start_ts=datetime(2026, 1, 28, 9, 0, 0),
+            end_ts=datetime(2026, 1, 28, 9, 5, 0),
+            is_hub=False,
+            season_id=TEST_PLAYER_INFO.season_id,
+            player_id=TEST_PLAYER_INFO.player_id,
+        ))
+
+        # App starts with NO player (simulating rotated log)
+        log_path = tmpdir / "no_player.log"
+        log_path.write_text("")
+
+        player_change_calls = []
+
+        collector = Collector(
+            db=db,
+            log_path=log_path,
+            player_info=None,  # No player detected on startup
+            on_player_change=lambda pi: player_change_calls.append(pi),
+        )
+        collector.initialize()
+
+        assert collector._player_id is None
+
+        # Simulate player data arriving line by line (same batch)
+        ts = datetime(2026, 1, 28, 10, 0, 0)
+
+        # Name arrives first
+        collector._handle_player_data_event(
+            ParsedPlayerDataEvent(name="TestPlayer"), ts
+        )
+        # SeasonId arrives — triggers initial detection with fallback ID
+        collector._handle_player_data_event(
+            ParsedPlayerDataEvent(season_id=1), ts
+        )
+
+        # At this point, fallback ID is used
+        fallback_id = f"{TEST_PLAYER_INFO.season_id}_{TEST_PLAYER_INFO.name}"
+        assert collector._player_id == fallback_id
+
+        # PlayerId arrives — should correct to actual ID
+        collector._handle_player_data_event(
+            ParsedPlayerDataEvent(player_id="test_player_123"), ts
+        )
+
+        # Now the actual player_id should be used
+        assert collector._player_id == TEST_PLAYER_INFO.player_id
+
+        # Runs stored under actual player_id should be visible
+        repo.set_player_context(
+            TEST_PLAYER_INFO.season_id, collector._player_id
+        )
+        runs = repo.get_recent_runs(limit=10)
+        map_runs = [r for r in runs if not r.is_hub]
+        assert len(map_runs) == 1
+
+        # Player change callback should have been called twice
+        # (once for fallback, once for actual ID correction)
+        assert len(player_change_calls) == 2
