@@ -37,6 +37,9 @@ ALLOWED_SETTINGS = {
     "window_position",
     "window_size",
     "window_maximized",
+    "low_supply_beacon_threshold",
+    "low_supply_compass_threshold",
+    "low_supply_resonance_threshold",
 }
 
 # Settings that are read-only via API (can be read but not written)

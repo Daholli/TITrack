@@ -106,6 +106,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -270,9 +271,20 @@
                     </Border>
                 </Grid>
 
+                <!-- Supply alert banner (click-through) -->
+                <TextBlock x:Name="SupplyAlertText"
+                           Grid.Row="2"
+                           Foreground="#f0a500"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           Margin="10,4,10,0"
+                           Visibility="Collapsed"
+                           IsHitTestVisible="False" />
+
                 <!-- Current Run / Loot Section (content click-through, scrollbar interactive) -->
                 <Border x:Name="LootSectionBorder"
-                        Grid.Row="2"
+                        Grid.Row="3"
                         Background="#ff2a2a4a"
                         CornerRadius="4"
                         Margin="8,6,8,8">
@@ -365,7 +377,7 @@
 
                 <!-- Resize grip visual hint -->
                 <Path x:Name="ResizeGrip"
-                      Grid.Row="2"
+                      Grid.Row="3"
                       Data="M 0,12 L 12,0 M 0,8 L 8,0 M 0,4 L 4,0"
                       Stroke="#3a3a5a"
                       StrokeThickness="1"
@@ -387,6 +399,15 @@
             <DockPanel x:Name="MicroDockPanel" Margin="8,4">
                 <!-- Buttons (dock position changed by code for vertical mode) -->
                 <StackPanel x:Name="MicroButtonsPanel" DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="MicroSupplyAlert"
+                               Text="⚠"
+                               Foreground="#f0a500"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,4,0"
+                               Visibility="Collapsed"
+                               Cursor="Arrow" />
                     <Button x:Name="MicroTransparencyButton"
                             Style="{StaticResource OverlayButton}"
                             Click="TransparencyButton_Click"

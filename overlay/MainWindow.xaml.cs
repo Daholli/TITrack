@@ -73,6 +73,16 @@ public partial class MainWindow : Window
         { "avg_time", "Avg" },
     };
 
+    // Supply alert state
+    private record SupplyItemRecord(int config_base_id, string name, string category, int quantity);
+    private record SupplyItemsResponse(SupplyItemRecord[] items);
+    private readonly HashSet<string> _supplyAlertedItems = new();
+    private int _supplyBeaconThreshold = 0;
+    private int _supplyCompassThreshold = 0;
+    private int _supplyResonanceThreshold = 0;
+    private int _supplySettingsCounter = 0;
+    private DispatcherTimer? _supplyAlertHideTimer;
+
     // Track previous run to show after map ends
     private ActiveRunResponse? _previousRun = null;
     private int? _lastActiveRunId = null;
@@ -1277,6 +1287,9 @@ public partial class MainWindow : Window
                 await LoadHideLootAsync();
             }
 
+            // Check low supply alerts
+            await CheckSupplyAlertsAsync();
+
             // Safety: ensure unlock button stays visible when locked
             if (_isLocked && _unlockWindow != null && !_unlockWindow.IsVisible)
             {
@@ -1288,6 +1301,88 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Refresh error: {ex.Message}");
+        }
+    }
+
+    private async Task CheckSupplyAlertsAsync()
+    {
+        // Reload thresholds periodically (every ~20 seconds / 10 refreshes)
+        _supplySettingsCounter++;
+        if (_supplySettingsCounter >= 10 || _supplySettingsCounter == 1)
+        {
+            _supplySettingsCounter = 0;
+            var beaconStr = await LoadSettingStringAsync("low_supply_beacon_threshold");
+            var compassStr = await LoadSettingStringAsync("low_supply_compass_threshold");
+            var resonanceStr = await LoadSettingStringAsync("low_supply_resonance_threshold");
+            _supplyBeaconThreshold = int.TryParse(beaconStr, out var b) ? b : 0;
+            _supplyCompassThreshold = int.TryParse(compassStr, out var c) ? c : 0;
+            _supplyResonanceThreshold = int.TryParse(resonanceStr, out var r) ? r : 0;
+        }
+
+        // Skip if no thresholds set
+        if (_supplyBeaconThreshold == 0 && _supplyCompassThreshold == 0 && _supplyResonanceThreshold == 0)
+        {
+            if (SupplyAlertText.Visibility == Visibility.Visible)
+                SupplyAlertText.Visibility = Visibility.Collapsed;
+            if (MicroSupplyAlert.Visibility == Visibility.Visible)
+                MicroSupplyAlert.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var data = await FetchAsync<SupplyItemsResponse>("/api/inventory/supplies");
+        if (data?.items == null) return;
+
+        var alerts = new List<string>();
+
+        foreach (var item in data.items)
+        {
+            int threshold = item.category switch
+            {
+                "beacons" => _supplyBeaconThreshold,
+                "compasses" => _supplyCompassThreshold,
+                "resonance" => _supplyResonanceThreshold,
+                _ => 0
+            };
+            if (threshold <= 0) continue;
+
+            var alertKey = item.config_base_id.ToString();
+
+            if (item.quantity <= threshold && !_supplyAlertedItems.Contains(alertKey))
+            {
+                alerts.Add($"\u26a0 Low: {item.name} \u2014 {item.quantity} left");
+                _supplyAlertedItems.Add(alertKey);
+            }
+            else if (item.quantity > threshold && _supplyAlertedItems.Contains(alertKey))
+            {
+                _supplyAlertedItems.Remove(alertKey);
+            }
+        }
+
+        if (alerts.Count > 0)
+        {
+            var alertText = string.Join("\n", alerts);
+
+            // Full overlay: show banner
+            SupplyAlertText.Text = alertText;
+            SupplyAlertText.Visibility = Visibility.Visible;
+
+            // Micro overlay: show ⚠ icon with tooltip
+            if (_microMode)
+            {
+                MicroSupplyAlert.ToolTip = alertText;
+                MicroSupplyAlert.Visibility = Visibility.Visible;
+            }
+
+            // Auto-hide after 15 seconds
+            _supplyAlertHideTimer?.Stop();
+            _supplyAlertHideTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
+            _supplyAlertHideTimer.Tick += (s, e) =>
+            {
+                _supplyAlertHideTimer.Stop();
+                SupplyAlertText.Visibility = Visibility.Collapsed;
+                MicroSupplyAlert.Visibility = Visibility.Collapsed;
+            };
+            _supplyAlertHideTimer.Start();
         }
     }
 

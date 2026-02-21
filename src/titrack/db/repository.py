@@ -13,7 +13,13 @@ from titrack.core.models import (
     SlotState,
 )
 from titrack.db.connection import Database
-from titrack.data.inventory import EXCLUDED_PAGES, get_gear_allowlist
+from titrack.data.inventory import (
+    EXCLUDED_PAGES,
+    get_gear_allowlist,
+    get_supply_beacon_ids,
+    get_supply_compass_ids,
+    get_supply_resonance_ids,
+)
 from titrack.parser.patterns import EXCLUDED_PROTO_NAMES, MAP_COST_PROTO_NAMES
 
 
@@ -1054,6 +1060,70 @@ class Repository:
         self.db.execute(
             "DELETE FROM hidden_items WHERE player_id = ?", (player_id,)
         )
+
+    # --- Supply Alerts ---
+
+    def get_consumed_supply_items(self) -> list[dict]:
+        """Get supply items that have been consumed as map costs.
+
+        Queries item_deltas for items consumed via Spv3Open/ClimbTowerOpen,
+        intersects with supply category IDs, and returns current quantities.
+
+        Returns:
+            List of {"config_base_id": int, "name": str, "category": str, "quantity": int}
+        """
+        player_id = self._current_player_id or ""
+        season_id = self._current_season_id
+
+        beacon_ids = get_supply_beacon_ids()
+        compass_ids = get_supply_compass_ids()
+        resonance_ids = get_supply_resonance_ids()
+        all_supply_ids = beacon_ids | compass_ids | resonance_ids
+
+        if not all_supply_ids:
+            return []
+
+        # Find distinct items consumed as map costs
+        cost_placeholders = ",".join("?" * len(MAP_COST_PROTO_NAMES))
+        rows = self.db.fetchall(
+            f"""SELECT DISTINCT config_base_id FROM item_deltas
+               WHERE proto_name IN ({cost_placeholders})
+               AND player_id = ? AND season_id = ?""",
+            (*MAP_COST_PROTO_NAMES, player_id, season_id),
+        )
+        consumed_ids = {row["config_base_id"] for row in rows}
+
+        # Intersect with supply categories
+        relevant_ids = consumed_ids & all_supply_ids
+        if not relevant_ids:
+            return []
+
+        # Get current quantities from slot state
+        states = self.get_all_slot_states(include_excluded=True)
+        quantities: dict[int, int] = {}
+        for state in states:
+            if state.config_base_id in relevant_ids:
+                quantities[state.config_base_id] = (
+                    quantities.get(state.config_base_id, 0) + max(0, state.num)
+                )
+
+        # Build result with names and categories
+        result = []
+        for cid in relevant_ids:
+            if cid in beacon_ids:
+                category = "beacons"
+            elif cid in compass_ids:
+                category = "compasses"
+            else:
+                category = "resonance"
+            result.append({
+                "config_base_id": cid,
+                "name": self.get_item_name(cid),
+                "category": category,
+                "quantity": quantities.get(cid, 0),
+            })
+
+        return result
 
     # --- Data Management ---
 

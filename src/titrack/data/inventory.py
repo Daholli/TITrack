@@ -101,3 +101,54 @@ def is_gear_excluded(page_id: int, config_base_id: Optional[int] = None) -> bool
     if config_base_id is not None and config_base_id in _allowed_gear_ids:
         return False
     return True
+
+
+# --- Supply category definitions for low-supply alerts ---
+
+# type_cn values for beacon and compass items
+SUPPLY_BEACON_TYPE_CN = "信标"
+SUPPLY_COMPASS_TYPE_CN = "罗盘"
+
+# Resonance items have a generic type_cn, so we identify by specific ConfigBaseIds
+SUPPLY_RESONANCE_IDS = frozenset({5028, 5040})
+
+# Module-level sets populated at startup
+_supply_beacon_ids: frozenset[int] = frozenset()
+_supply_compass_ids: frozenset[int] = frozenset()
+
+
+def initialize_supply_categories(db: Database) -> None:
+    """Query items table and populate supply category ID sets.
+
+    Call this once after db.connect() at startup, alongside initialize_gear_allowlist().
+    """
+    global _supply_beacon_ids, _supply_compass_ids
+
+    # Beacons
+    rows = db.fetchall(
+        "SELECT config_base_id FROM items WHERE type_cn = ?",
+        (SUPPLY_BEACON_TYPE_CN,),
+    )
+    _supply_beacon_ids = frozenset(row["config_base_id"] for row in rows)
+
+    # Compasses
+    rows = db.fetchall(
+        "SELECT config_base_id FROM items WHERE type_cn = ?",
+        (SUPPLY_COMPASS_TYPE_CN,),
+    )
+    _supply_compass_ids = frozenset(row["config_base_id"] for row in rows)
+
+
+def get_supply_beacon_ids() -> frozenset[int]:
+    """Get the set of beacon ConfigBaseIds."""
+    return _supply_beacon_ids
+
+
+def get_supply_compass_ids() -> frozenset[int]:
+    """Get the set of compass ConfigBaseIds."""
+    return _supply_compass_ids
+
+
+def get_supply_resonance_ids() -> frozenset[int]:
+    """Get the set of resonance ConfigBaseIds."""
+    return SUPPLY_RESONANCE_IDS

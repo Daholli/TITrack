@@ -1277,6 +1277,10 @@ tr.nightmare .zone-name {
     border-left-color: var(--accent);
 }
 
+.toast-warning {
+    border-left-color: #f0a500;
+}
+
 /* Exit App Button */
 .exit-btn {
     background: var(--negative);
@@ -1495,6 +1499,35 @@ tr.nightmare .zone-name {
     color: var(--text-secondary);
     font-size: 0.85rem;
     margin-bottom: 12px;
+}
+
+.supply-threshold-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+}
+
+.supply-threshold-row label {
+    color: var(--text-primary);
+    font-weight: 500;
+    min-width: 100px;
+}
+
+.supply-threshold-input {
+    width: 80px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.supply-threshold-input:focus {
+    border-color: var(--accent);
+    outline: none;
 }
 
 .settings-btn-primary {

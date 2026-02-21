@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Low Map Supply Alerts**: Configurable per-item alerts that notify when a specific consumed supply item drops to a threshold. Only items you've actually used as map costs (beacons, compasses, resonance) are monitored — unused items won't trigger alerts. Set thresholds per category in Settings (0 to disable). Dashboard shows amber toast (15s); full overlay shows amber banner (15s); micro overlay shows ⚠ icon with tooltip (15s). Alerts trigger once per item and re-arm when quantity goes back above threshold.
+
 ### Fixed
 - **Hidden items lost between sessions**: Fixed player identity inconsistency that could cause hidden items, ignored runs, and ignored report items to become inaccessible across app restarts. When the game log was missing PlayerId (e.g., after log rotation), the app used a name-based fallback ID that differed from the actual player ID used in previous sessions. Now persists the known player ID mapping in settings and automatically migrates per-player data when the ID format changes.
 - **Runs empty after delayed character detection**: Fixed PlayerId being lost during live player detection when the app starts with no player context (e.g., game log rotated overnight). Name+SeasonId triggered an initial detection that cleared pending data before PlayerId arrived, locking the app to a fallback ID that didn't match stored runs. PlayerId now continues accumulating and corrects the effective ID automatically.

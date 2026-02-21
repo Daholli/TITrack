@@ -37,6 +37,10 @@ let realtimeTickerInterval = null;
 let realtimeBaseSeconds = 0;
 let realtimeBaseTimestamp = 0;
 
+// Low supply alert state
+let supplyAlertThresholds = { beacons: 0, compasses: 0, resonance: 0 };
+let supplyAlertedCategories = new Set();
+
 // Update state
 let updateStatus = null;
 let updateCheckInterval = null;
@@ -329,6 +333,79 @@ async function handleOverlayHideLootToggle(event) {
     }
 
     toggle.disabled = false;
+}
+
+// --- Low Supply Alert Functions ---
+
+async function fetchSupplyThreshold(category) {
+    try {
+        const response = await fetch(`${API_BASE}/settings/low_supply_${category}_threshold`);
+        if (!response.ok) return 0;
+        const data = await response.json();
+        return parseInt(data.value, 10) || 0;
+    } catch (error) {
+        return 0;
+    }
+}
+
+async function updateSupplyThreshold(category, value) {
+    try {
+        const response = await fetch(`${API_BASE}/settings/low_supply_${category}_threshold`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: String(value) })
+        });
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function loadSupplyThresholds() {
+    const [beacons, compasses, resonance] = await Promise.all([
+        fetchSupplyThreshold('beacon'),
+        fetchSupplyThreshold('compass'),
+        fetchSupplyThreshold('resonance'),
+    ]);
+    supplyAlertThresholds = { beacons, compasses, resonance };
+}
+
+async function fetchConsumedSupplies() {
+    try {
+        const response = await fetch(`${API_BASE}/inventory/supplies`);
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        return null;
+    }
+}
+
+async function checkLowSupplyAlerts() {
+    // Skip if no thresholds are set
+    if (supplyAlertThresholds.beacons === 0 &&
+        supplyAlertThresholds.compasses === 0 &&
+        supplyAlertThresholds.resonance === 0) {
+        return;
+    }
+
+    const data = await fetchConsumedSupplies();
+    if (!data || !data.items) return;
+
+    for (const item of data.items) {
+        const threshold = supplyAlertThresholds[item.category] || 0;
+        if (threshold <= 0) continue;
+
+        // Use config_base_id as the alert key for per-item tracking
+        const alertKey = String(item.config_base_id);
+
+        if (item.quantity <= threshold && !supplyAlertedCategories.has(alertKey)) {
+            showToast(`Low Supply: ${item.name} — ${item.quantity} remaining (threshold: ${threshold})`, 'warning');
+            supplyAlertedCategories.add(alertKey);
+        } else if (item.quantity > threshold && supplyAlertedCategories.has(alertKey)) {
+            // Re-arm alert when quantity goes back above threshold
+            supplyAlertedCategories.delete(alertKey);
+        }
+    }
 }
 
 // --- Overlay Micro Mode Setting ---
@@ -667,11 +744,14 @@ function showToast(message, type = 'info') {
     // Trigger animation
     setTimeout(() => toast.classList.add('show'), 10);
 
+    // Warning toasts stay longer (15s vs 3s)
+    const duration = type === 'warning' ? 15000 : 3000;
+
     // Remove after delay
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, duration);
 }
 
 function renderStats(stats, inventory) {
@@ -1308,6 +1388,11 @@ async function openSettingsModal() {
     const fontSlider = document.getElementById('micro-font-scale-slider');
     fontSlider.value = microFontScale;
     document.getElementById('micro-font-scale-value').textContent = microFontScale + '%';
+
+    // Load supply alert thresholds
+    document.getElementById('settings-supply-beacon').value = supplyAlertThresholds.beacons;
+    document.getElementById('settings-supply-compass').value = supplyAlertThresholds.compasses;
+    document.getElementById('settings-supply-resonance').value = supplyAlertThresholds.resonance;
 
     // Fetch current log path from status
     try {
@@ -2487,6 +2572,9 @@ async function refreshAll(forceRender = false) {
         renderInventory(inventory, forceRender);
         renderCharts(statsHistory, forceRender);
 
+        // Check low supply alerts after inventory is rendered
+        await checkLowSupplyAlerts();
+
         // Check if player changed and update display
         const playerHash = simpleHash(player);
         if (forceRender || playerHash !== lastPlayerHash) {
@@ -2496,6 +2584,9 @@ async function refreshAll(forceRender = false) {
             // Reload per-player data when player changes
             hiddenItemIds = await fetchHiddenItems();
             updateHideItemsButton();
+
+            // Clear supply alert state on player change
+            supplyAlertedCategories.clear();
 
             // Auto-close no-character modal when character is detected
             if (player && noCharacterModalShown) {
@@ -3022,6 +3113,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('micro-font-scale-slider').addEventListener('change', (e) => {
         updateMicroFontScale(parseInt(e.target.value, 10));
     });
+
+    // Supply alert threshold inputs
+    for (const [inputId, category] of [
+        ['settings-supply-beacon', 'beacon'],
+        ['settings-supply-compass', 'compass'],
+        ['settings-supply-resonance', 'resonance'],
+    ]) {
+        document.getElementById(inputId).addEventListener('change', async (e) => {
+            const value = Math.max(0, parseInt(e.target.value, 10) || 0);
+            e.target.value = value;
+            await updateSupplyThreshold(category, value);
+            // Update local state
+            const catKey = category === 'beacon' ? 'beacons' : category === 'compass' ? 'compasses' : 'resonance';
+            supplyAlertThresholds[catKey] = value;
+            // Clear alerted state so alerts can re-trigger with new thresholds
+            supplyAlertedCategories.clear();
+        });
+    }
+
+    // Load supply alert thresholds
+    await loadSupplyThresholds();
 
     // Load initial map costs state
     mapCostsEnabled = await fetchMapCostsSetting();

@@ -560,6 +560,48 @@ Resetting stats clears all pause state.
 - Setting stored in database as `realtime_tracking_enabled`
 - Default: disabled (in-map time only)
 
+## Low Map Supply Alerts
+
+Configurable alerts that notify when a specific consumed supply item drops to a set threshold. Only items actually consumed as map costs (via `Spv3Open`/`ClimbTowerOpen` proto names) are monitored — unused items in inventory won't trigger alerts.
+
+### Categories
+
+| Category | How items are identified |
+|----------|------------------------|
+| Beacons | Items with `type_cn = '信标'` in items table |
+| Compasses | Items with `type_cn = '罗盘'` in items table |
+| Resonance | Hardcoded ConfigBaseIds: `{5028, 5040}` |
+
+Category ID sets are populated at startup by `initialize_supply_categories()` in `src/titrack/data/inventory.py`.
+
+### How It Works
+
+1. User sets per-category thresholds in Settings (0 = disabled)
+2. Backend queries `item_deltas` for distinct items consumed via map cost proto names
+3. Intersects with supply category IDs to get relevant consumed items
+4. Returns each item's name, category, and current quantity from slot state
+5. Frontend/overlay checks each item individually against its category's threshold
+
+### Display
+
+- **Dashboard**: Amber toast notification (15 seconds), shows item name and quantity
+- **Full overlay**: Amber text banner (15 seconds auto-hide)
+- **Micro overlay**: ⚠ icon with tooltip containing alert text (15 seconds auto-hide)
+
+Alerts trigger once per item crossing the threshold and re-arm when quantity goes back above.
+
+### Settings Keys
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `low_supply_beacon_threshold` | `"0"` | Alert when a consumed beacon drops to this count |
+| `low_supply_compass_threshold` | `"0"` | Alert when a consumed compass drops to this count |
+| `low_supply_resonance_threshold` | `"0"` | Alert when a consumed resonance item drops to this count |
+
+### API
+
+- `GET /api/inventory/supplies` — Returns consumed supply items with current quantities (`SupplyItemsResponse`)
+
 ## Zone Translation
 
 Zone names are mapped in `src/titrack/data/zones.py`. The `ZONE_NAMES` dictionary maps internal zone path patterns to English display names. Use `/api/stats/zones` to see all encountered zones and identify which need translation.

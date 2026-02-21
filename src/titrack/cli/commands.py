@@ -15,7 +15,7 @@ from titrack.collector.collector import Collector
 from titrack.config.logging import setup_logging, get_logger
 from titrack.config.settings import Settings, find_log_file
 from titrack.core.models import Item, ItemDelta, Price, Run
-from titrack.data.inventory import initialize_gear_allowlist
+from titrack.data.inventory import initialize_gear_allowlist, initialize_supply_categories
 from titrack.data.zones import get_zone_display_name
 from titrack.db.connection import Database
 from titrack.db.repository import Repository
@@ -102,6 +102,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     db = Database(settings.db_path)
     db.connect()
     initialize_gear_allowlist(db)
+    initialize_supply_categories(db)
 
     repo = Repository(db)
 
@@ -207,6 +208,7 @@ def cmd_parse_file(args: argparse.Namespace) -> int:
     db = Database(settings.db_path)
     db.connect()
     initialize_gear_allowlist(db)
+    initialize_supply_categories(db)
 
     repo = Repository(db)
     collector = Collector(
@@ -262,6 +264,7 @@ def cmd_tail(args: argparse.Namespace) -> int:
     db = Database(settings.db_path)
     db.connect()
     initialize_gear_allowlist(db)
+    initialize_supply_categories(db)
 
     repo = Repository(db)
     collector = Collector(
@@ -528,6 +531,7 @@ def _serve_browser_mode(args: argparse.Namespace, settings: Settings, logger, sh
             collector_db = Database(settings.db_path)
             collector_db.connect()
             initialize_gear_allowlist(collector_db)
+            initialize_supply_categories(collector_db)
 
             collector_repo = Repository(collector_db)
 
@@ -978,6 +982,7 @@ def _serve_with_window(args: argparse.Namespace, settings: Settings, logger, sho
             collector_db = Database(settings.db_path)
             collector_db.connect()
             initialize_gear_allowlist(collector_db)
+            initialize_supply_categories(collector_db)
 
             collector_repo = Repository(collector_db)
 

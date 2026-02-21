@@ -236,3 +236,18 @@ class IgnoredItemsResponse(BaseModel):
 
     run_id: int
     ignored_ids: list[int]
+
+
+class SupplyItem(BaseModel):
+    """A single supply item with its current quantity."""
+
+    config_base_id: int
+    name: str
+    category: str
+    quantity: int
+
+
+class SupplyItemsResponse(BaseModel):
+    """Consumed supply items for low-supply alerts."""
+
+    items: list[SupplyItem]

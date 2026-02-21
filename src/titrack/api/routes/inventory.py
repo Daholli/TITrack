@@ -10,6 +10,7 @@ from titrack.api.schemas import (
     HiddenItemsResponse,
     InventoryItem,
     InventoryResponse,
+    SupplyItemsResponse,
 )
 from titrack.db.repository import Repository
 from titrack.parser.patterns import FE_CONFIG_BASE_ID
@@ -53,6 +54,15 @@ def set_hidden_items(
     repo.set_hidden_items(set(request.hidden_ids))
     hidden = repo.get_hidden_items()
     return HiddenItemsResponse(hidden_ids=sorted(hidden))
+
+
+@router.get("/supplies", response_model=SupplyItemsResponse)
+def get_consumed_supplies(
+    repo: Repository = Depends(get_repository),
+) -> SupplyItemsResponse:
+    """Get consumed supply items with current quantities for alerts."""
+    items = repo.get_consumed_supply_items()
+    return SupplyItemsResponse(items=items)
 
 
 @router.get("", response_model=InventoryResponse)
