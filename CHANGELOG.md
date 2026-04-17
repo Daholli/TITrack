@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.7] - 2026-04-16
+
+### Fixed
+- **SS12 Lunaria compatibility**: Drops and inventory sorts weren't being detected after the season launch because the game's Unreal log category prefix changed from `GameLog:` to `TLLua:` (bag/item events) and `TLShipping:` (level events). Parser patterns now accept any log category, keeping backward compatibility with older logs.
+
+### Added
+- **Season name mapping**: SeasonId 1401 now displays as "SS12 Lunaria" in the dashboard header.
+
+---
+
 ## [0.5.6] - 2026-02-21
 
 ### Added

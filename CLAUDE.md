@@ -152,17 +152,19 @@ TITrack automatically checks common installation paths for both Steam and the st
 
 **Key patterns to parse:**
 
+Note: the log category prefix varies by game version. Historically `GameLog:`; as of SS12 Lunaria (season 1401) it's `TLLua:` for Lua events (BagMgr, ItemChange, SceneLevelMgr) and `TLShipping:` for LevelMgr. Patterns in `src/titrack/parser/patterns.py` accept any `\w+:` prefix.
+
 ```text
 # Item pickup block
-GameLog: Display: [Game] ItemChange@ ProtoName=PickItems start
-GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 671
-GameLog: Display: [Game] ItemChange@ ProtoName=PickItems end
+TLLua: Display: [Game] ItemChange@ ProtoName=PickItems start
+TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 671
+TLLua: Display: [Game] ItemChange@ ProtoName=PickItems end
 
 # Inventory snapshot (triggered by sorting inventory in-game)
-GameLog: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 609
+TLLua: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 609
 
 # Slot removal (last item in stack consumed - no ConfigBaseId/Num in this line)
-GameLog: Display: [Game] BagMgr@:RemoveBagItem PageId = 103 SlotId = 39
+TLLua: Display: [Game] BagMgr@:RemoveBagItem PageId = 103 SlotId = 39
 
 # Map boundaries
 LevelMgr@ EnterLevel ...

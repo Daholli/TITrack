@@ -52,9 +52,10 @@ PLAYER_ID_PATTERN_ALT = re.compile(r"^\|\s{6}\+PlayerId\s*\[([^\]]+)\]")
 SEASON_NAMES = {
     # Permanent server (non-seasonal)
     1: "Permanent Server",
-    # Current season (as of Jan 2026)
+    # Historical seasons
     1301: "SS11 Vorax",
-    # Add historical seasons as needed
+    # Current season (as of Apr 2026)
+    1401: "SS12 Lunaria",
 }
 
 

@@ -2,10 +2,14 @@
 
 import re
 
+# Unreal log category prefix. The game has used "GameLog:" historically and switched
+# to "TLLua:"/"TLShipping:" in SS12 Lunaria (season 1401). Accept any category.
+_LOG_PREFIX = r"\w+:\s*Display:\s*\[Game\]\s*"
+
 # BagMgr modification line
-# Example: GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 671
+# Example: TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 671
 BAG_MODIFY_PATTERN = re.compile(
-    r"GameLog:\s*Display:\s*\[Game\]\s*BagMgr@:Modfy\s+BagItem\s+"
+    _LOG_PREFIX + r"BagMgr@:Modfy\s+BagItem\s+"
     r"PageId\s*=\s*(?P<page_id>\d+)\s+"
     r"SlotId\s*=\s*(?P<slot_id>\d+)\s+"
     r"ConfigBaseId\s*=\s*(?P<config_base_id>\d+)\s+"
@@ -13,17 +17,17 @@ BAG_MODIFY_PATTERN = re.compile(
 )
 
 # BagMgr remove line (slot fully cleared, e.g., last item in stack consumed)
-# Example: GameLog: Display: [Game] BagMgr@:RemoveBagItem PageId = 103 SlotId = 39
+# Example: TLLua: Display: [Game] BagMgr@:RemoveBagItem PageId = 103 SlotId = 39
 BAG_REMOVE_PATTERN = re.compile(
-    r"GameLog:\s*Display:\s*\[Game\]\s*BagMgr@:RemoveBagItem\s+"
+    _LOG_PREFIX + r"BagMgr@:RemoveBagItem\s+"
     r"PageId\s*=\s*(?P<page_id>\d+)\s+"
     r"SlotId\s*=\s*(?P<slot_id>\d+)"
 )
 
 # BagMgr init/snapshot line (triggered by sorting inventory or opening bag)
-# Example: GameLog: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 609
+# Example: TLLua: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 609
 BAG_INIT_PATTERN = re.compile(
-    r"GameLog:\s*Display:\s*\[Game\]\s*BagMgr@:InitBagData\s+"
+    _LOG_PREFIX + r"BagMgr@:InitBagData\s+"
     r"PageId\s*=\s*(?P<page_id>\d+)\s+"
     r"SlotId\s*=\s*(?P<slot_id>\d+)\s+"
     r"ConfigBaseId\s*=\s*(?P<config_base_id>\d+)\s+"
@@ -31,10 +35,10 @@ BAG_INIT_PATTERN = re.compile(
 )
 
 # ItemChange context markers
-# Example: GameLog: Display: [Game] ItemChange@ ProtoName=PickItems start
-# Example: GameLog: Display: [Game] ItemChange@ ProtoName=PickItems end
+# Example: TLLua: Display: [Game] ItemChange@ ProtoName=PickItems start
+# Example: TLLua: Display: [Game] ItemChange@ ProtoName=PickItems end
 ITEM_CHANGE_PATTERN = re.compile(
-    r"GameLog:\s*Display:\s*\[Game\]\s*ItemChange@\s*"
+    _LOG_PREFIX + r"ItemChange@\s*"
     r"ProtoName=(?P<proto_name>\w+)\s+"
     r"(?P<marker>start|end)"
 )
@@ -48,9 +52,9 @@ LEVEL_EVENT_PATTERN = re.compile(
 )
 
 # LevelId extraction (for differentiating zones with same path but different areas)
-# Example: GameLog: Display: [Game] LevelMgr@ LevelUid, LevelType, LevelId = 1061006 3 4606
+# Example: TLShipping: Display: [Game] LevelMgr@ LevelUid, LevelType, LevelId = 1061006 3 4606
 LEVEL_ID_PATTERN = re.compile(
-    r"GameLog:\s*Display:\s*\[Game\]\s*LevelMgr@\s+LevelUid,\s*LevelType,\s*LevelId\s*=\s*"
+    _LOG_PREFIX + r"LevelMgr@\s+LevelUid,\s*LevelType,\s*LevelId\s*=\s*"
     r"(?P<level_uid>\d+)\s+(?P<level_type>\d+)\s+(?P<level_id>\d+)"
 )
 
