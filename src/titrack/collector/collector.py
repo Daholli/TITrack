@@ -535,6 +535,22 @@ class Collector:
             # different login batches.
             self._process_player_change(new_player_info)
 
+        elif "name" in self._pending_player_data and "player_id" in self._pending_player_data:
+            # Post-Apr-2026 patch: SeasonId is no longer logged. Try to recover it
+            # from the saved reverse mapping (player_id → season_id).
+            saved_season = self.repository.lookup_season_id_by_player_id(
+                self._pending_player_data["player_id"]
+            )
+            if saved_season is not None:
+                new_player_info = PlayerInfo(
+                    name=self._pending_player_data["name"],
+                    level=self._pending_player_data.get("level", 0),
+                    season_id=saved_season,
+                    hero_id=self._pending_player_data.get("hero_id", 0),
+                    player_id=self._pending_player_data["player_id"],
+                )
+                self._process_player_change(new_player_info)
+
     def _cleanup_stale_pending_searches(self, current_time: datetime) -> None:
         """Remove pending price searches older than TTL."""
         stale_keys = [

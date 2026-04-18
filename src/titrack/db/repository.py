@@ -56,6 +56,8 @@ class Repository:
                 self.set_setting(
                     f"known_player_id_{season_id}_{player_name}", player_id
                 )
+                # Save reverse mapping so season_id can be recovered from player_id alone
+                self.set_setting(f"known_season_id_{player_id}", str(season_id))
                 # Migrate any per-player data stored under the fallback key
                 self._migrate_player_data(fallback_id, player_id)
 
@@ -87,6 +89,31 @@ class Repository:
     def lookup_player_id(self, season_id: int, player_name: str) -> Optional[str]:
         """Look up a previously saved actual player_id for a name+season combo."""
         return self.get_setting(f"known_player_id_{season_id}_{player_name}")
+
+    def lookup_season_id_by_player_id(self, player_id: str) -> Optional[int]:
+        """Look up a previously saved season_id for a known player_id."""
+        val = self.get_setting(f"known_season_id_{player_id}")
+        if val:
+            return int(val)
+        # One-time migration: scan existing known_player_id_<season>_<name> entries
+        # to build the reverse mapping if it hasn't been written yet.
+        rows = self.db.fetchall(
+            "SELECT key, value FROM settings WHERE key LIKE 'known_player_id_%'",
+            (),
+        )
+        for row in rows:
+            key, stored_player_id = row["key"], row["value"]
+            if stored_player_id == player_id:
+                # key format: known_player_id_{season_id}_{player_name}
+                parts = key.split("_", 4)  # ["known", "player", "id", "<season>", "<name>"]
+                if len(parts) >= 4:
+                    try:
+                        season = int(parts[3])
+                        self.set_setting(f"known_season_id_{player_id}", str(season))
+                        return season
+                    except ValueError:
+                        pass
+        return None
 
     def has_player_context(self) -> bool:
         """Return True if a player context has been set."""

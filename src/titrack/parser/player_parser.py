@@ -12,13 +12,15 @@ class PlayerInfo:
 
     name: str
     level: int
-    season_id: int
+    season_id: Optional[int]
     hero_id: int
     player_id: Optional[str] = None  # Unique player identifier
 
     @property
     def season_name(self) -> str:
         """Get human-readable season/league name."""
+        if self.season_id is None:
+            return "Unknown Season"
         return SEASON_NAMES.get(self.season_id, f"Season {self.season_id}")
 
     @property
@@ -45,6 +47,16 @@ PLAYER_LEVEL_PATTERN_ALT = re.compile(r"^\|\s{6}\+Level\s*\[(\d+)\]")
 PLAYER_SEASON_PATTERN_ALT = re.compile(r"^\|\s{6}\+SeasonId\s*\[(\d+)\]")
 PLAYER_HERO_PATTERN_ALT = re.compile(r"^\|\s{6}\+HeroId\s*\[(\d+)\]")
 PLAYER_ID_PATTERN_ALT = re.compile(r"^\|\s{6}\+PlayerId\s*\[([^\]]+)\]")
+
+# New patterns for post-Apr-2026 patch (GetPlayerData socket no longer logged).
+# Player name + hero ID come from the _JoinFight line.
+# Player ID comes from the PlayerIdTrace login line.
+JOINFIGHT_PLAYER_PATTERN = re.compile(
+    r"SwitchBattleAreaUtil:_JoinFight\s+(\S+?):(\d+)\s*$"
+)
+PLAYER_ID_TRACE_PATTERN = re.compile(
+    r"PlayerIdTrace@\w+:SetPlayerId\b.*\bnew=(\d+)"
+)
 
 
 # Season ID to name mapping
@@ -132,6 +144,18 @@ def parse_player_line(line: str) -> dict[str, any]:
         match = PLAYER_ID_PATTERN_ALT.search(line)
         if match:
             result["player_id"] = match.group(1)
+        else:
+            match = PLAYER_ID_TRACE_PATTERN.search(line)
+            if match:
+                result["player_id"] = match.group(1)
+
+    # New-format fallback: _JoinFight line carries name + hero_id
+    if not result.get("name"):
+        match = JOINFIGHT_PLAYER_PATTERN.search(line)
+        if match:
+            result["name"] = match.group(1)
+            if not result.get("hero_id"):
+                result["hero_id"] = int(match.group(2))
 
     return result
 
@@ -280,12 +304,14 @@ def parse_game_log(log_path: Path, from_end: bool = True) -> Optional[PlayerInfo
         logger.warning(f"Failed to parse player data from game log: {e}")
         return None
 
-    # Return only if we got the essential data
-    if name and season_id:
+    # Return if we have essential data.
+    # season_id may be absent in post-Apr-2026 logs (GetPlayerData no longer logged);
+    # _resolve_season_id in commands.py will fill it in from the saved DB mapping.
+    if name and (season_id is not None or player_id):
         return PlayerInfo(
             name=name,
             level=level or 0,
-            season_id=season_id,
+            season_id=season_id,  # may be None; resolved later
             hero_id=hero_id or 0,
             player_id=player_id,
         )

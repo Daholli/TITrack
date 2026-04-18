@@ -49,6 +49,31 @@ def _resolve_player_id(player_info: Optional[PlayerInfo], repo: Repository, logg
     return player_info
 
 
+def _resolve_season_id(player_info: Optional[PlayerInfo], repo: Repository, logger) -> Optional[PlayerInfo]:
+    """Fill in missing season_id from saved settings if player_id is known.
+
+    Post-Apr-2026 game patch: the GetPlayerData socket response is no longer
+    logged, so SeasonId is not present in the log. If a previous session saved
+    the reverse mapping (player_id → season_id) we can recover it here.
+    """
+    if player_info is None:
+        return None
+    if player_info.season_id is not None:
+        return player_info  # already have season_id
+    if player_info.player_id:
+        saved_season = repo.lookup_season_id_by_player_id(player_info.player_id)
+        if saved_season is not None:
+            logger.info(f"Resolved season_id from saved mapping: {saved_season}")
+            return PlayerInfo(
+                name=player_info.name,
+                level=player_info.level,
+                season_id=saved_season,
+                hero_id=player_info.hero_id,
+                player_id=player_info.player_id,
+            )
+    return player_info
+
+
 def print_delta(delta: ItemDelta, repo: Repository) -> None:
     """Print a delta to console."""
     item_name = repo.get_item_name(delta.config_base_id)
@@ -537,6 +562,8 @@ def _serve_browser_mode(args: argparse.Namespace, settings: Settings, logger, sh
 
             # Resolve player_id from saved mapping if missing from log
             player_info = _resolve_player_id(player_info, collector_repo, logger)
+            # Resolve season_id from saved mapping if missing (post-Apr-2026 patch)
+            player_info = _resolve_season_id(player_info, collector_repo, logger)
 
             # Initialize sync manager (uses collector's DB connection)
             # Don't set season context yet - wait for player detection from live log
@@ -988,6 +1015,8 @@ def _serve_with_window(args: argparse.Namespace, settings: Settings, logger, sho
 
             # Resolve player_id from saved mapping if missing from log
             player_info = _resolve_player_id(player_info, collector_repo, logger)
+            # Resolve season_id from saved mapping if missing (post-Apr-2026 patch)
+            player_info = _resolve_season_id(player_info, collector_repo, logger)
 
             sync_manager = SyncManager(collector_db)
             sync_manager.initialize()

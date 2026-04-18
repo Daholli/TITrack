@@ -184,7 +184,7 @@ class PlayerResponse(BaseModel):
 
     name: str
     level: int
-    season_id: int
+    season_id: Optional[int] = None
     season_name: str
     hero_id: int
     hero_name: str
