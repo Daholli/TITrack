@@ -118,7 +118,7 @@ def get_stats_history(
     realtime_enabled = repo.get_setting("realtime_tracking_enabled") == "true"
 
     # Calculate rolling value/hour (using 1-hour windows)
-    value_per_hour_points = []
+    raw_value_per_hour_points = []
     window_minutes = 60
 
     # Filter runs for rolling calculation (exclude ignored)
@@ -161,13 +161,28 @@ def get_stats_history(
             else:
                 value_rate = 0
 
-            value_per_hour_points.append(
+            raw_value_per_hour_points.append(
                 TimeSeriesPoint(
                     timestamp=run.end_ts,
-                    value=round(value_rate, 2),
+                    value=value_rate,
                     cumulative_seconds=vph_cumulative_seconds,
                 )
             )
+
+    # Apply EMA smoothing to reduce spikiness.
+    # alpha=0.1 corresponds to roughly a 19-period EMA — gradual, slow-moving trend line.
+    value_per_hour_points = []
+    ema: float | None = None
+    alpha = 0.1
+    for point in raw_value_per_hour_points:
+        ema = point.value if ema is None else alpha * point.value + (1 - alpha) * ema
+        value_per_hour_points.append(
+            TimeSeriesPoint(
+                timestamp=point.timestamp,
+                value=round(ema, 2),
+                cumulative_seconds=point.cumulative_seconds,
+            )
+        )
 
     # Filter to requested time window
     cutoff = datetime.now() - timedelta(hours=hours)
