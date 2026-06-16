@@ -31,7 +31,7 @@
         }:
         let
           cfg = config.services.titrack;
-          python = pkgs.python312;
+          python = pkgs.python313;
           defaultPkg = python.pkgs.buildPythonApplication {
             pname = "titrack";
             version = pyprojectVersion;
@@ -100,7 +100,7 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        python = pkgs.python312;
+        python = pkgs.python313;
 
         titrack = python.pkgs.buildPythonApplication {
           pname = "titrack";
