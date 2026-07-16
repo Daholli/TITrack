@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SS13 Afterlight readiness**: SeasonId 1501 now displays as "SS13 Afterlight" in the dashboard header. Added hero name mappings for Sage (SS12 Lunaria) and Selina (SS13 Afterlight).
+- **SS13 + SS12 backfill items (51 new)**: Added the SS13 Wick seasonal compasses (Bronze/Silver/Gold), Pristine Lunaria Compass, Siege/Revelation Hunting Astrolabes, Nether King's Soul Nail, Nether King's Divinities and Broken Divinities, all 19 Divine Remnants, and 12 new Core Organs including the SS13 legendary organs (The Three Saints, Uros's Bond, Contained Mind, Beneath the Styx, Pantheon's Elegy). Backfilled SS12 items missed in April: Concoction Recipes, Approaching Nightfall and Red Shoes of Cruelty lunar-phase materials, and Hero Memories (Origin/Discipline/Progress). Seed count: 1884 → 1935.
+- **Seed revision mechanism**: The item seed now carries a `revision` number plus the list of entries whose content changed (Torchlight recycles seasonal-compass ConfigBaseIds every season). On startup, databases behind the current revision get just those rows refreshed — previously, renames never reached existing installs because seeding only inserted new IDs. This retroactively fixes the April replacements (Vorax Compasses at 10290–10292 stuck as "Pig Iron/Sterling Silver/Titanium-Alloy Scalpel") plus this season's recycled IDs.
+
+### Changed
+- **Recycled compass IDs updated**: SS12's Lunar Stones (10300–10302) became the permanent Lunaria Compass line, and Hunting Compasses (10140/10142) became Hunting Astrolabes. Organ 382202 was recycled from "Mother Goddess' Paddock" to "Crimson Gash", and two organs stuck with untranslated Chinese names (382245/382246) now display as "Boor's Iron Crown" and "Coldness Tracer's Tear".
+
+### Fixed
+- **Seasonal compasses now trigger low-supply alerts**: The compass alert category only matched regular compasses (`罗盘`), so seasonal compasses (`赛季罗盘` — SS13 Wicks, SS12 Lunar Stones) never alerted even when consumed as map costs. Both types are now included.
+
 ---
 
 ## [0.5.9] - 2026-04-24

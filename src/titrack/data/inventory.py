@@ -107,7 +107,9 @@ def is_gear_excluded(page_id: int, config_base_id: Optional[int] = None) -> bool
 
 # type_cn values for beacon and compass items
 SUPPLY_BEACON_TYPE_CN = "信标"
-SUPPLY_COMPASS_TYPE_CN = "罗盘"
+# Regular compasses plus seasonal compasses (e.g. SS13 Wicks, SS12 Lunar Stones) —
+# both are consumed via Spv3Open and should trigger low-supply alerts.
+SUPPLY_COMPASS_TYPE_CNS = ("罗盘", "赛季罗盘")
 
 # Resonance items have a generic type_cn, so we identify by specific ConfigBaseIds
 SUPPLY_RESONANCE_IDS = frozenset({5028, 5040})
@@ -131,10 +133,11 @@ def initialize_supply_categories(db: Database) -> None:
     )
     _supply_beacon_ids = frozenset(row["config_base_id"] for row in rows)
 
-    # Compasses
+    # Compasses (regular + seasonal)
+    placeholders = ", ".join("?" for _ in SUPPLY_COMPASS_TYPE_CNS)
     rows = db.fetchall(
-        "SELECT config_base_id FROM items WHERE type_cn = ?",
-        (SUPPLY_COMPASS_TYPE_CN,),
+        f"SELECT config_base_id FROM items WHERE type_cn IN ({placeholders})",
+        SUPPLY_COMPASS_TYPE_CNS,
     )
     _supply_compass_ids = frozenset(row["config_base_id"] for row in rows)
 

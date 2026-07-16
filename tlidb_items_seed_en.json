@@ -1,13 +1,28 @@
 {
   "meta": {
-    "generated_from": "TLI-tracker-translated-1.0 (Rt-data.json + wiki-translations.json) + tlidb.com scrape 2026-04-24 (SS12 Lunaria items)",
-    "generated_at_utc": "2026-04-24T10:20:00.000000Z",
-    "count": 1884,
+    "generated_from": "TLI-tracker-translated-1.0 (Rt-data.json + wiki-translations.json) + tlidb.com scrape 2026-04-24 (SS12 Lunaria items) + tlidb.com scrape 2026-07-16 (SS13 Afterlight pre-launch + SS12 backfill)",
+    "generated_at_utc": "2026-07-16T12:00:00.000000Z",
+    "count": 1935,
     "notes": [
       "name_en uses wiki-translations when available; otherwise derived from TLIDB URL slug when present; some entries may remain null.",
-      "Added 60 new Lunaria (SS12, season 1401) items and replaced 3 stale seasonal-compass entries (10290-10292) whose IDs now belong to Vorax Compass variants."
+      "Added 60 new Lunaria (SS12, season 1401) items and replaced 3 stale seasonal-compass entries (10290-10292) whose IDs now belong to Vorax Compass variants.",
+      "2026-07-16: SS13 Afterlight pre-launch pass. Added Wick seasonal compasses (10320-10322), Pristine Lunaria Compass (10303), Siege/Revelation Hunting Astrolabes (10141/10143), Nether King's Soul Nail (394201), and SS12 backfill items. Replaced recycled IDs in place: Lunar Stones 10300-10302 -> Lunaria Compass line, Hunting Compasses 10140/10142 -> Hunting Astrolabes. Introduced meta.revision/revised_ids so replacements propagate to existing installs."
     ],
-    "name_en_generation": "Filled from url slug when available; else guessed from icon filename token."
+    "name_en_generation": "Filled from url slug when available; else guessed from icon filename token.",
+    "revision": 1,
+    "revised_ids": [
+      "10140",
+      "10142",
+      "10290",
+      "10291",
+      "10292",
+      "10300",
+      "10301",
+      "10302",
+      "382202",
+      "382245",
+      "382246"
+    ]
   },
   "items": [
     {
@@ -7734,25 +7749,25 @@
     },
     {
       "id": "10140",
-      "name_en": "Hunting Compass",
-      "name_cn": "狩猎罗盘",
+      "name_en": "Hunting Astrolabe",
+      "name_cn": "狩猎星盘",
       "type_cn": "罗盘",
-      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayGoH_1_1_Icon_128.webp",
-      "url_cn": "https://tlidb.com/cn/Hunting_Compass",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_AstroCompass_GameplayGoH_1_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Hunting_Astrolabe",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/Hunting_Compass"
+      "url_en": "https://tlidb.com/en/Hunting_Astrolabe"
     },
     {
       "id": "10142",
-      "name_en": "General Hunting Compass",
-      "name_cn": "将军之狩猎罗盘",
+      "name_en": "General Hunting Astrolabe",
+      "name_cn": "将军之狩猎星盘",
       "type_cn": "罗盘",
-      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayGoH_2_2_Icon_128.webp",
-      "url_cn": "https://tlidb.com/cn/General_Hunting_Compass",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_AstroCompass_GameplayGoH_2_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/General_Hunting_Astrolabe",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/General_Hunting_Compass"
+      "url_en": "https://tlidb.com/en/General_Hunting_Astrolabe"
     },
     {
       "id": "10150",
@@ -13663,14 +13678,14 @@
     },
     {
       "id": "382202",
-      "name_en": "Organ: Mother Goddess' Paddock",
-      "name_cn": "器官：母神围场",
-      "type_cn": "核心器官-项链",
-      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Amulet_Epic_304_128.webp",
-      "url_cn": "https://tlidb.com/cn/Organ%3A_Mother_Goddess%27_Paddock",
+      "name_en": "Organ: Crimson Gash",
+      "name_cn": "器官：深红之刎",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Amulet_Epic_335_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Crimson_Gash",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/Organ%3A_Mother_Goddess%27_Paddock"
+      "url_en": "https://tlidb.com/en/Organ%3A_Crimson_Gash"
     },
     {
       "id": "382207",
@@ -19867,25 +19882,25 @@
     },
     {
       "id": "382245",
-      "name_en": "器官：莽夫的铁冠",
+      "name_en": "Organ: Boor's Iron Crown",
       "name_cn": "器官：莽夫的铁冠",
       "type_cn": "核心器官-头部",
       "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Helmet_Epic_319_128.webp",
-      "url_cn": "https://tlidb.com/cn/%E5%99%A8%E5%AE%98%EF%BC%9A%E8%8E%BD%E5%A4%AB%E7%9A%84%E9%93%81%E5%86%A0",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Boors_Iron_Crown",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/%E5%99%A8%E5%AE%98%EF%BC%9A%E8%8E%BD%E5%A4%AB%E7%9A%84%E9%93%81%E5%86%A0"
+      "url_en": "https://tlidb.com/en/Organ%3A_Boors_Iron_Crown"
     },
     {
       "id": "382246",
-      "name_en": "器官：溯寒者的鸣泣",
+      "name_en": "Organ: Coldness Tracer's Tear",
       "name_cn": "器官：溯寒者的鸣泣",
       "type_cn": "核心器官-项链",
       "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Amulet_Epic_326_128.webp",
-      "url_cn": "https://tlidb.com/cn/%E5%99%A8%E5%AE%98%EF%BC%9A%E6%BA%AF%E5%AF%92%E8%80%85%E7%9A%84%E9%B8%A3%E6%B3%A3",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Coldness_Tracers_Tear",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/%E5%99%A8%E5%AE%98%EF%BC%9A%E6%BA%AF%E5%AF%92%E8%80%85%E7%9A%84%E9%B8%A3%E6%B3%A3"
+      "url_en": "https://tlidb.com/en/Organ%3A_Coldness_Tracers_Tear"
     },
     {
       "id": "113326",
@@ -20131,36 +20146,36 @@
     },
     {
       "id": "10300",
-      "name_en": "Dim Lunar Stone",
-      "name_cn": "微茫月石",
-      "type_cn": "赛季罗盘",
-      "img": "https://cdn.tlidb.com/UIV2/S14Gameplay/UI/Textures/NoAtlas/UI_S14Compass_Gameplay_1_Icon.webp",
-      "url_cn": "https://tlidb.com/cn/Dim_Lunar_Stone",
+      "name_en": "Lunaria Compass",
+      "name_cn": "明月罗盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayLunaria_1_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Lunaria_Compass",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/Dim_Lunar_Stone"
+      "url_en": "https://tlidb.com/en/Lunaria_Compass"
     },
     {
       "id": "10301",
-      "name_en": "Bright Lunar Stone",
-      "name_cn": "流光月石",
-      "type_cn": "赛季罗盘",
-      "img": "https://cdn.tlidb.com/UIV2/S14Gameplay/UI/Textures/NoAtlas/UI_S14Compass_Gameplay_2_Icon.webp",
-      "url_cn": "https://tlidb.com/cn/Bright_Lunar_Stone",
+      "name_en": "Moonlit Casket Lunaria Compass",
+      "name_cn": "秘匣之明月罗盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayLunaria_2_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Moonlit_Casket_Lunaria_Compass",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/Bright_Lunar_Stone"
+      "url_en": "https://tlidb.com/en/Moonlit_Casket_Lunaria_Compass"
     },
     {
       "id": "10302",
-      "name_en": "Dazzling Lunar Stone",
-      "name_cn": "璀璨月石",
-      "type_cn": "赛季罗盘",
-      "img": "https://cdn.tlidb.com/UIV2/S14Gameplay/UI/Textures/NoAtlas/UI_S14Compass_Gameplay_3_Icon.webp",
-      "url_cn": "https://tlidb.com/cn/Dazzling_Lunar_Stone",
+      "name_en": "Lunar Stele Compass",
+      "name_cn": "月像之明月罗盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayLunaria_3_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Lunar_Stele_Compass",
       "reward_cn": null,
       "baseItemId": null,
-      "url_en": "https://tlidb.com/en/Dazzling_Lunar_Stone"
+      "url_en": "https://tlidb.com/en/Lunar_Stele_Compass"
     },
     {
       "id": "350758",
@@ -20733,6 +20748,567 @@
       "reward_cn": null,
       "baseItemId": null,
       "url_en": "https://tlidb.com/en/Lunar_Fragment"
+    },
+    {
+      "id": "6224",
+      "name_en": "Concoction Recipe",
+      "name_cn": "大补药的秘方",
+      "type_cn": "记忆荧光",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/FateCard/128/UI_Memory_6222_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Concoction_Recipe",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Concoction_Recipe"
+    },
+    {
+      "id": "6225",
+      "name_en": "Immortality Concoction Recipe",
+      "name_cn": "不老仙药的秘方",
+      "type_cn": "记忆荧光",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/FateCard/128/UI_Memory_6223_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Immortality_Concoction_Recipe",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Immortality_Concoction_Recipe"
+    },
+    {
+      "id": "10141",
+      "name_en": "Siege Hunting Astrolabe",
+      "name_cn": "围剿之狩猎星盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_AstroCompass_GameplayGoH_2_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Siege_Hunting_Astrolabe",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Siege_Hunting_Astrolabe"
+    },
+    {
+      "id": "10143",
+      "name_en": "Revelation Hunting Astrolabe",
+      "name_cn": "启示之狩猎星盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_AstroCompass_GameplayGoH_3_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Revelation_Hunting_Astrolabe",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Revelation_Hunting_Astrolabe"
+    },
+    {
+      "id": "10303",
+      "name_en": "Pristine Lunaria Compass",
+      "name_cn": "皎洁之明月罗盘",
+      "type_cn": "罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Compass/128/UI_Compass_GameplayLunaria_2_2_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Pristine_Lunaria_Compass",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Pristine_Lunaria_Compass"
+    },
+    {
+      "id": "10320",
+      "name_en": "Bronze Wick",
+      "name_cn": "铜丝灯芯",
+      "type_cn": "赛季罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Item/128/UI_S15Compass_Gameplay_1_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Bronze_Wick",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Bronze_Wick"
+    },
+    {
+      "id": "10321",
+      "name_en": "Silver Wick",
+      "name_cn": "银丝灯芯",
+      "type_cn": "赛季罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Item/128/UI_S15Compass_Gameplay_2_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Silver_Wick",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Silver_Wick"
+    },
+    {
+      "id": "10322",
+      "name_en": "Gold Wick",
+      "name_cn": "金丝灯芯",
+      "type_cn": "赛季罗盘",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Item/128/UI_S15Compass_Gameplay_3_Icon_128.webp",
+      "url_cn": "https://tlidb.com/cn/Gold_Wick",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Gold_Wick"
+    },
+    {
+      "id": "71001",
+      "name_en": "Memory of Origin",
+      "name_cn": "本源的追忆",
+      "type_cn": "英雄追忆",
+      "img": "https://cdn.tlidb.com/UIV2/Common/Icon/UI/Textures/Item/NoAtlas_112_160/UI_Item_BenYuanDeZhuiYi_Icon_112.webp",
+      "url_cn": "https://tlidb.com/cn/Memory_of_Origin",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Memory_of_Origin"
+    },
+    {
+      "id": "71002",
+      "name_en": "Memory of Discipline",
+      "name_cn": "守己的追忆",
+      "type_cn": "英雄追忆",
+      "img": "https://cdn.tlidb.com/UIV2/Common/Icon/UI/Textures/Item/NoAtlas_112_160/UI_Item_ShouJiDeZhuiYi_Icon_112.webp",
+      "url_cn": "https://tlidb.com/cn/Memory_of_Discipline",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Memory_of_Discipline"
+    },
+    {
+      "id": "71003",
+      "name_en": "Memory of Progress",
+      "name_cn": "奋进的追忆",
+      "type_cn": "英雄追忆",
+      "img": "https://cdn.tlidb.com/UIV2/Common/Icon/UI/Textures/Item/NoAtlas_112_160/UI_Item_FenJinDeZhuiYi_Icon_112.webp",
+      "url_cn": "https://tlidb.com/cn/Memory_of_Progress",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Memory_of_Progress"
+    },
+    {
+      "id": "381084",
+      "name_en": "Flawless Nerve: Parasitism",
+      "name_cn": "完美神经：寄生",
+      "type_cn": "特殊器官-前缀",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Item/UI_S13_SpecialOrgans_05.webp",
+      "url_cn": "https://tlidb.com/cn/Flawless_Nerve%3A_Parasitism",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Flawless_Nerve%3A_Parasitism"
+    },
+    {
+      "id": "382150",
+      "name_en": "Organ: Unholy Prayer",
+      "name_cn": "器官：污秽祝祷",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Ring_Epic_220_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Unholy_Prayer",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Unholy_Prayer"
+    },
+    {
+      "id": "382247",
+      "name_en": "Organ: Iron Nest",
+      "name_cn": "器官：铁巢",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Amulet_Epic_315_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Iron_Nest",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Iron_Nest"
+    },
+    {
+      "id": "382248",
+      "name_en": "Organ: Golden Touch",
+      "name_cn": "器官：点金手",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Gloves_Epic_440_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Golden_Touch",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Golden_Touch"
+    },
+    {
+      "id": "382249",
+      "name_en": "Organ: Magmaskull",
+      "name_cn": "器官：熔颅",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Helmet_Epic_335_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Magmaskull",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Magmaskull"
+    },
+    {
+      "id": "382250",
+      "name_en": "Organ: Ralph's Dreadcrest",
+      "name_cn": "器官：雷尔夫的悍首",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Helmet_Epic_334_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Ralphs_Dreadcrest",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Ralphs_Dreadcrest"
+    },
+    {
+      "id": "382251",
+      "name_en": "Organ: Omni-Elixir Notes",
+      "name_cn": "器官：万灵药的尾调",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Belt_Epic_226_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Omni-Elixir_Notes",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Omni-Elixir_Notes"
+    },
+    {
+      "id": "382252",
+      "name_en": "Organ: Malevolent Hand",
+      "name_cn": "器官：恶意之手",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Gloves_Epic_412_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Malevolent_Hand",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Malevolent_Hand"
+    },
+    {
+      "id": "382253",
+      "name_en": "Organ: Pantheon's Elegy",
+      "name_cn": "器官：悼神",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Belt_Epic_227_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Pantheons_Elegy",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Pantheons_Elegy"
+    },
+    {
+      "id": "382254",
+      "name_en": "Organ: Beneath the Styx",
+      "name_cn": "器官：冥河之下",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Shoes_Epic_433_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Beneath_the_Styx",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Beneath_the_Styx"
+    },
+    {
+      "id": "382255",
+      "name_en": "Organ: The Three Saints",
+      "name_cn": "器官：三圣",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Armor_Epic_451_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_The_Three_Saints",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_The_Three_Saints"
+    },
+    {
+      "id": "382256",
+      "name_en": "Organ: Uros's Bond",
+      "name_cn": "器官：乌洛斯的纽带",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Armor_Epic_203_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Uross_Bond",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Uross_Bond"
+    },
+    {
+      "id": "382257",
+      "name_en": "Organ: Contained Mind",
+      "name_cn": "器官：缸中之众",
+      "type_cn": "核心器官",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/Organ/128/Icon_Organ_Helmet_Epic_332_128.webp",
+      "url_cn": "https://tlidb.com/cn/Organ%3A_Contained_Mind",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Organ%3A_Contained_Mind"
+    },
+    {
+      "id": "392045",
+      "name_en": "Approaching Nightfall",
+      "name_cn": "夜幕将至",
+      "type_cn": "追忆复苏素材-月相",
+      "img": "https://cdn.tlidb.com/UI/Textures/S14Gameplay/UI/Textures/NoAtlas/UI_S14AwakenMemory_SpMaterial_42.webp",
+      "url_cn": "https://tlidb.com/cn/Approaching_Nightfall",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Approaching_Nightfall"
+    },
+    {
+      "id": "392046",
+      "name_en": "Red Shoes of Cruelty",
+      "name_cn": "残忍红舞鞋",
+      "type_cn": "追忆复苏素材-月相",
+      "img": "https://cdn.tlidb.com/UI/Textures/S14Gameplay/UI/Textures/NoAtlas/UI_S14AwakenMemory_SpMaterial_41.webp",
+      "url_cn": "https://tlidb.com/cn/Red_Shoes_of_Cruelty",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Red_Shoes_of_Cruelty"
+    },
+    {
+      "id": "394001",
+      "name_en": "Nether King's Broken Divinity: Judgment",
+      "name_cn": "冥王的残缺神格：审判",
+      "type_cn": "冥王的神格",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/UI/Textures/TalentSlate/NoAtlas_112_160/UI_S15Devilblock_shenpan_2_2_112.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Broken_Divinity%3A_Judgment",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Broken_Divinity%3A_Judgment"
+    },
+    {
+      "id": "394002",
+      "name_en": "Nether King's Broken Divinity: Contamination",
+      "name_cn": "冥王的残缺神格：侵染",
+      "type_cn": "冥王的神格",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/UI/Textures/TalentSlate/NoAtlas_112_160/UI_S15Devilblock_qinran_2_2_112.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Broken_Divinity%3A_Contamination",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Broken_Divinity%3A_Contamination"
+    },
+    {
+      "id": "394004",
+      "name_en": "Nether King's Divinity: Judgment",
+      "name_cn": "冥王的神格：审判",
+      "type_cn": "冥王的神格",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/UI/Textures/TalentSlate/NoAtlas_112_160/UI_S15Devilblock_shenpan_3_3_112.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Divinity%3A_Judgment",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Divinity%3A_Judgment"
+    },
+    {
+      "id": "394005",
+      "name_en": "Nether King's Divinity: Contamination",
+      "name_cn": "冥王的神格：侵染",
+      "type_cn": "冥王的神格",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/UI/Textures/TalentSlate/NoAtlas_112_160/UI_S15Devilblock_qinran_3_3_112.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Divinity%3A_Contamination",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Divinity%3A_Contamination"
+    },
+    {
+      "id": "394006",
+      "name_en": "Nether King's Divinity: Banishment",
+      "name_cn": "冥王的神格：放逐",
+      "type_cn": "冥王的神格",
+      "img": "https://cdn.tlidb.com/UI/Textures/Common/Icon/UI/Textures/TalentSlate/NoAtlas_112_160/UI_S15Devilblock_fangzhu_3_3_112.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Divinity%3A_Banishment",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Divinity%3A_Banishment"
+    },
+    {
+      "id": "394101",
+      "name_en": "God of Might's Divine Remnant - Magic",
+      "name_cn": "巨力之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_01.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Mights_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Mights_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394102",
+      "name_en": "God of Might's Divine Remnant - Rare",
+      "name_cn": "巨力之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_02.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Mights_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Mights_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394103",
+      "name_en": "God of Might's Divine Remnant - Legendary",
+      "name_cn": "巨力之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_03.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Mights_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Mights_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394104",
+      "name_en": "Goddess of Hunting's Divine Remnant - Magic",
+      "name_cn": "狩猎之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_04.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Huntings_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Huntings_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394105",
+      "name_en": "Goddess of Hunting's Divine Remnant - Rare",
+      "name_cn": "狩猎之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_05.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Huntings_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Huntings_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394106",
+      "name_en": "Goddess of Hunting's Divine Remnant - Legendary",
+      "name_cn": "狩猎之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_06.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Huntings_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Huntings_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394107",
+      "name_en": "Goddess of Knowledge's Divine Remnant - Magic",
+      "name_cn": "知识之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_07.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Knowledges_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Knowledges_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394108",
+      "name_en": "Goddess of Knowledge's Divine Remnant - Rare",
+      "name_cn": "知识之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_08.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Knowledges_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Knowledges_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394109",
+      "name_en": "Goddess of Knowledge's Divine Remnant - Legendary",
+      "name_cn": "知识之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_09.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Knowledges_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Knowledges_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394110",
+      "name_en": "God of War's Divine Remnant - Magic",
+      "name_cn": "征战之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_10.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Wars_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Wars_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394111",
+      "name_en": "God of War's Divine Remnant - Rare",
+      "name_cn": "征战之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_11.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Wars_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Wars_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394112",
+      "name_en": "God of War's Divine Remnant - Legendary",
+      "name_cn": "征战之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_12.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Wars_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Wars_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394113",
+      "name_en": "Goddess of Deception's Divine Remnant - Magic",
+      "name_cn": "欺诈之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_13.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Deceptions_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Deceptions_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394114",
+      "name_en": "Goddess of Deception's Divine Remnant - Rare",
+      "name_cn": "欺诈之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_14.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Deceptions_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Deceptions_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394115",
+      "name_en": "Goddess of Deception's Divine Remnant - Legendary",
+      "name_cn": "欺诈之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_15.webp",
+      "url_cn": "https://tlidb.com/cn/Goddess_of_Deceptions_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Goddess_of_Deceptions_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394116",
+      "name_en": "God of Machines' Divine Remnant - Magic",
+      "name_cn": "机械之神的神骸-魔法",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_16.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Machines_Divine_Remnant_-_Magic",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Machines_Divine_Remnant_-_Magic"
+    },
+    {
+      "id": "394117",
+      "name_en": "God of Machines' Divine Remnant - Rare",
+      "name_cn": "机械之神的神骸-稀有",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_17.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Machines_Divine_Remnant_-_Rare",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Machines_Divine_Remnant_-_Rare"
+    },
+    {
+      "id": "394118",
+      "name_en": "God of Machines' Divine Remnant - Legendary",
+      "name_cn": "机械之神的神骸-传奇",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_18.webp",
+      "url_cn": "https://tlidb.com/cn/God_of_Machines_Divine_Remnant_-_Legendary",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/God_of_Machines_Divine_Remnant_-_Legendary"
+    },
+    {
+      "id": "394119",
+      "name_en": "Nether King's Divine Remnant",
+      "name_cn": "冥王的神骸",
+      "type_cn": "神骸",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilMaterial_19.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Divine_Remnant",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Divine_Remnant"
+    },
+    {
+      "id": "394201",
+      "name_en": "Nether King's Soul Nail",
+      "name_cn": "冥王的魂钉",
+      "type_cn": "魂钉",
+      "img": "https://cdn.tlidb.com/UI/Textures/S15Gameplay/UI/Textures/NoAtlas/UI_S15DevilFixedMaterial_01.webp",
+      "url_cn": "https://tlidb.com/cn/Nether_Kings_Soul_Nail",
+      "reward_cn": null,
+      "baseItemId": null,
+      "url_en": "https://tlidb.com/en/Nether_Kings_Soul_Nail"
     }
   ]
 }

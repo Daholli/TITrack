@@ -147,6 +147,7 @@ class Database:
         # Auto-seed items if table is empty (first run experience)
         if self._auto_seed:
             self._auto_seed_items(cursor)
+            self._apply_seed_revisions(cursor)
             self._fix_placeholder_item_names(cursor)
 
     def _run_migrations(self, cursor: sqlite3.Cursor) -> None:
@@ -289,6 +290,72 @@ class Database:
 
         except Exception as e:
             print(f"Failed to auto-seed items: {e}")
+
+    def _apply_seed_revisions(self, cursor: sqlite3.Cursor) -> None:
+        """
+        Force-update seed entries whose content changed after their initial insert.
+
+        _auto_seed_items uses INSERT OR IGNORE, so entries that were renamed in
+        the seed (Torchlight recycles seasonal-compass ConfigBaseIds each season,
+        e.g. SS12 Lunar Stones -> permanent Lunaria Compasses) never reach
+        existing databases. The seed meta carries a monotonically increasing
+        "revision" plus the list of "revised_ids" affected; when the stored
+        revision is behind, those rows are re-written from the seed and the new
+        revision is recorded. Rows outside revised_ids are untouched, so user
+        edits to other items are preserved.
+        """
+        try:
+            from titrack.config.paths import get_items_seed_path
+
+            seed_path = get_items_seed_path()
+            if not seed_path.exists():
+                return
+
+            with open(seed_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            meta = data.get("meta", {})
+            revision = int(meta.get("revision", 0))
+            if not revision:
+                return
+
+            row = cursor.execute(
+                "SELECT value FROM settings WHERE key = 'items_seed_revision'"
+            ).fetchone()
+            applied = int(row[0]) if row else 0
+            if applied >= revision:
+                return
+
+            revised_ids = {str(i) for i in meta.get("revised_ids", [])}
+            updated = 0
+            for item in data.get("items", []):
+                if str(item["id"]) in revised_ids:
+                    cursor.execute(
+                        """UPDATE items
+                           SET name_en = ?, name_cn = ?, type_cn = ?,
+                               icon_url = ?, url_en = ?, url_cn = ?
+                           WHERE config_base_id = ?""",
+                        (
+                            item.get("name_en"),
+                            item.get("name_cn"),
+                            item.get("type_cn"),
+                            item.get("img"),
+                            item.get("url_en"),
+                            item.get("url_cn"),
+                            int(item["id"]),
+                        ),
+                    )
+                    updated += cursor.rowcount
+
+            cursor.execute(
+                "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
+                ("items_seed_revision", str(revision)),
+            )
+            if updated:
+                print(f"Applied items seed revision {revision}: refreshed {updated} entries")
+
+        except Exception as e:
+            print(f"Failed to apply seed revisions: {e}")
 
     def _fix_placeholder_item_names(self, cursor: sqlite3.Cursor) -> None:
         """

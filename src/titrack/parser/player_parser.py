@@ -54,8 +54,10 @@ SEASON_NAMES = {
     1: "Permanent Server",
     # Historical seasons
     1301: "SS11 Vorax",
-    # Current season (as of Apr 2026)
     1401: "SS12 Lunaria",
+    # Current season (as of Jul 2026). ID follows the +100/season pattern
+    # (1301 -> 1401 -> 1501); asset names use the internal S15 prefix.
+    1501: "SS13 Afterlight",
 }
 
 
@@ -73,6 +75,10 @@ HERO_NAMES = {
     2000: "Oracle",
     2100: "Leonel",
     2200: "Cateye",
+    # Pattern-based (+100 per hero in release order); unverified against logs.
+    # Unmapped IDs display as "Hero <id>", so a wrong guess is cosmetic only.
+    2300: "Sage",  # SS12 Lunaria (Scent Weaver Sage)
+    2400: "Selina",  # SS13 Afterlight (Tide Whisper Selina)
 }
 
 
