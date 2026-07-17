@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.5.10] - 2026-07-17
+
 ### Added
 - **SS13 Afterlight readiness**: SeasonId 1501 now displays as "SS13 Afterlight" in the dashboard header. Added hero name mappings for Sage (SS12 Lunaria) and Selina (SS13 Afterlight).
 - **SS13 + SS12 backfill items (51 new)**: Added the SS13 Wick seasonal compasses (Bronze/Silver/Gold), Pristine Lunaria Compass, Siege/Revelation Hunting Astrolabes, Nether King's Soul Nail, Nether King's Divinities and Broken Divinities, all 19 Divine Remnants, and 12 new Core Organs including the SS13 legendary organs (The Three Saints, Uros's Bond, Contained Mind, Beneath the Styx, Pantheon's Elegy). Backfilled SS12 items missed in April: Concoction Recipes, Approaching Nightfall and Red Shoes of Cruelty lunar-phase materials, and Hero Memories (Origin/Discipline/Progress). Seed count: 1884 → 1935.
