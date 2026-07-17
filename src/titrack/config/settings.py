@@ -24,6 +24,12 @@ GAME_PATHS = [
     Path("C:/Program Files/Torchlight Infinite"),
     Path("D:/Torchlight Infinite"),
     Path("E:/Torchlight Infinite"),
+    # Linux Steam (Proton) locations — the game writes UE_game.log under its
+    # install directory, which maps directly into the Linux filesystem
+    Path.home() / ".local/share/Steam/steamapps/common/Torchlight Infinite",
+    Path.home() / ".steam/steam/steamapps/common/Torchlight Infinite",
+    # Flatpak Steam
+    Path.home() / ".var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Torchlight Infinite",
 ]
 
 # Keep for backwards compatibility
@@ -185,13 +191,20 @@ def get_default_db_path() -> Path:
     """
     Get the default database path.
 
-    Uses %LOCALAPPDATA%/TITrack/tracker.db on Windows.
+    Uses %LOCALAPPDATA%/TITrack/tracker.db on Windows and
+    $XDG_DATA_HOME/TITracker/tracker.db (~/.local/share by default) elsewhere.
+    A pre-existing legacy ~/.titrack/tracker.db is kept if found.
     """
     local_app_data = os.environ.get("LOCALAPPDATA")
     if local_app_data:
         return Path(local_app_data) / "TITrack" / "tracker.db"
-    # Fallback
-    return Path.home() / ".titrack" / "tracker.db"
+    # Legacy non-Windows fallback location — keep using it if it exists
+    legacy = Path.home() / ".titrack" / "tracker.db"
+    if legacy.exists():
+        return legacy
+    xdg = os.environ.get("XDG_DATA_HOME")
+    base = Path(xdg) if xdg else Path.home() / ".local" / "share"
+    return base / "TITracker" / "tracker.db"
 
 
 def get_portable_db_path() -> Path:

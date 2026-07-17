@@ -52,6 +52,34 @@ Inspired by [WealthyExile](https://github.com/WealthyExile) for Path of Exile.
 
 </details>
 
+<details>
+<summary><strong>Linux (Nix flake)</strong></summary>
+
+Playing Torchlight Infinite through Steam Proton? TITrack's core (tracker + web dashboard) runs natively on Linux in browser mode. With [Nix](https://nixos.org/download) installed (flakes enabled):
+
+```bash
+# Run directly from GitHub
+nix run github:astockman99/TITrack -- serve --no-window
+
+# Or from a local checkout
+nix run . -- serve --no-window
+
+# Or install into your profile
+nix profile install github:astockman99/TITrack
+titrack serve --no-window
+```
+
+Then open `http://127.0.0.1:8000` in your browser.
+
+Notes:
+
+- The log file is auto-detected in the default Steam library (`~/.local/share/Steam/steamapps/common/Torchlight Infinite/...`), including Flatpak Steam. For a custom library, point TITrack at it via Settings → Game Directory (any of the game root, `Logs` folder, or `UE_game.log` path works).
+- Data is stored under `$XDG_DATA_HOME/TITracker` (default `~/.local/share/TITracker`).
+- The native window and the in-game overlay are Windows-only (WPF/WebView2); on Linux use the browser dashboard.
+- A dev shell with Python, pytest, black, and ruff is available via `nix develop`.
+
+</details>
+
 ### First-Time Setup
 
 Once TITrack is running:

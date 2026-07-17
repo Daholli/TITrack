@@ -116,17 +116,35 @@ def get_resource_path(relative_path: str) -> Path:
     """
     Get the absolute path to a bundled resource file.
 
+    Resolution order:
+    1. TITRACK_RESOURCE_DIR environment variable (set by e.g. the Nix wrapper)
+    2. Frozen mode: the PyInstaller _internal directory
+    3. Source checkout: the project root
+    4. Installed package (pip/Nix): beside the titrack package itself
+
     Args:
         relative_path: Path relative to app directory (e.g., "tlidb_items_seed_en.json")
 
     Returns:
         Absolute path to the resource file
     """
+    env_dir = os.environ.get("TITRACK_RESOURCE_DIR")
+    if env_dir:
+        candidate = Path(env_dir) / relative_path
+        if candidate.exists():
+            return candidate
+
     if is_frozen():
         # PyInstaller 6.x: bundled files are in _internal directory
         return get_internal_dir() / relative_path
-    else:
-        return get_app_dir() / relative_path
+
+    candidate = get_app_dir() / relative_path
+    if candidate.exists():
+        return candidate
+
+    # Installed as a package (no project root on disk): resources are copied
+    # into the package directory at install time (see flake.nix postInstall).
+    return Path(__file__).resolve().parent.parent / relative_path
 
 
 def get_data_dir(portable: bool = False) -> Path:
@@ -143,12 +161,15 @@ def get_data_dir(portable: bool = False) -> Path:
         # Portable mode or frozen: data beside exe
         data_dir = get_app_dir() / "data"
     else:
-        # Development: use user's local app data
-        import os
-
+        # Development / installed package: use the platform's user-data location
         local_app_data = os.environ.get("LOCALAPPDATA", "")
         if local_app_data:
             data_dir = Path(local_app_data) / "TITracker"
+        elif sys.platform != "win32":
+            # Linux/macOS: XDG data home (~/.local/share by default)
+            xdg = os.environ.get("XDG_DATA_HOME")
+            base = Path(xdg) if xdg else Path.home() / ".local" / "share"
+            data_dir = base / "TITracker"
         else:
             # Fallback to beside app
             data_dir = get_app_dir() / "data"

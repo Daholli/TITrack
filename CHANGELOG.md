@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Zone Names
 - Added SS13 campaign zone: Dawn Sanctuary (`LiMingShengSuo`).
 
+### Linux Support
+- **Nix flake**: Added `flake.nix` so Linux users (playing via Steam Proton) can build and run TITrack with `nix run github:astockman99/TITrack -- serve --no-window`. Includes a dev shell (`nix develop`). The native window and WPF overlay remain Windows-only; Linux uses the browser dashboard.
+- **Linux paths**: Log auto-detection now checks the default Steam library (`~/.local/share/Steam`, `~/.steam/steam`) and Flatpak Steam locations. App data is stored under `$XDG_DATA_HOME/TITracker` (default `~/.local/share/TITracker`) instead of failing without `%LOCALAPPDATA%`; a pre-existing legacy `~/.titrack/tracker.db` is still honored.
+- **Packaging fixes**: Static web assets are now declared as package data (installed wheels were missing them), and bundled resources resolve correctly for installed packages via a new lookup order (`TITRACK_RESOURCE_DIR` env var → frozen `_internal` → project root → package directory).
+
 ---
 
 ## [0.5.9] - 2026-04-24
