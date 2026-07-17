@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Seasonal compasses now trigger low-supply alerts**: The compass alert category only matched regular compasses (`罗盘`), so seasonal compasses (`赛季罗盘` — SS13 Wicks, SS12 Lunar Stones) never alerted even when consumed as map costs. Both types are now included.
+- **SS13 pickup proto rename**: Afterlight renamed the loot pickup block from `ProtoName=PickItems` to `PickItem` (singular). Pickups are now recognized under both names (verified against a live SS13 log: SeasonId 1501 and the `TLLua:`/`TLShipping:` prefixes are unchanged).
+- **New SS13 inventory protos excluded from loot**: Afterlight logs new `ItemChange@` blocks for gear equip/unequip (`PutOn`/`PutOff`), skill purchases (`BuySkill` — writes to the tracked skill page and would have counted as loot), item locking (`LockOrUnlockItem`), gear appraisal (`Evaluate`/`EvaluateOneKey`), and talent resets (`WashGeniusAllPoint`). These now update inventory state without creating loot deltas.
+
+### Zone Names
+- Added SS13 campaign zone: Dawn Sanctuary (`LiMingShengSuo`).
 
 ---
 

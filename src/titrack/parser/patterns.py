@@ -101,10 +101,19 @@ BOUND_ITEM_IDS = frozenset({
     6080,    # Bound Energy Core (5080)
 })
 
+# Proto names marking loot pickup blocks. SS13 Afterlight renamed "PickItems"
+# to "PickItem" (singular); accept both.
+PICKUP_PROTO_NAMES = frozenset({"PickItems", "PickItem"})
+
 # Proto names for non-loot inventory changes (trade house, recycling, skill management, etc.).
 # These update inventory (slot state) but should NOT create deltas or count as loot.
+# PutOn/PutOff (equip/unequip gear), BuySkill (skill purchase), LockOrUnlockItem,
+# Evaluate/EvaluateOneKey (gear appraisal), and WashGeniusAllPoint (talent reset)
+# first appeared in SS13 Afterlight logs.
 EXCLUDED_PROTO_NAMES = frozenset({
-    "Push2", "XchgReceive", "ExchangeItem", "XchgRecall", "XchgForSale", "UnequipSkill"
+    "Push2", "XchgReceive", "ExchangeItem", "XchgRecall", "XchgForSale", "UnequipSkill",
+    "PutOn", "PutOff", "BuySkill", "LockOrUnlockItem",
+    "Evaluate", "EvaluateOneKey", "WashGeniusAllPoint",
 })
 
 # Proto names for map cost events (compass/beacon consumption).

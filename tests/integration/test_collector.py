@@ -240,6 +240,62 @@ class TestCollectorIntegration:
         # Most deltas should be from PickItems
         assert len(pick_deltas) > 0
 
+    def test_ss13_pickitem_singular_creates_loot_deltas(self, test_env):
+        """SS13 Afterlight renamed the pickup proto PickItems -> PickItem (singular).
+
+        Loot inside PickItem blocks must still create deltas with the pickup
+        context, and the new SS13 inventory-management protos (BuySkill, PutOn,
+        LockOrUnlockItem) must update slot state without creating deltas.
+        """
+        db = test_env["db"]
+        tmpdir = test_env["tmpdir"]
+        repo = Repository(db)
+        repo.set_player_context(TEST_PLAYER_INFO.season_id, TEST_PLAYER_INFO.player_id)
+
+        # SS13-format lines (TLLua prefix) captured from a live Afterlight log
+        log_content = """\
+[2026.07.17-08.00.00:000][  0]TLLua: Display: [Game] BagMgr@:InitBagData PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 500
+[2026.07.17-08.00.05:000][  0]TLShipping: Display: [Game] SceneLevelMgr@ OpenMainWorld END! InMainLevelPath = /Game/Art/Maps/02KD/KD_YuanSuKuangDong000/KD_YuanSuKuangDong000
+[2026.07.17-08.01.00:000][  0]TLLua: Display: [Game] ItemChange@ ProtoName=PickItem start
+[2026.07.17-08.01.00:001][  0]TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 0 ConfigBaseId = 100300 Num = 600
+[2026.07.17-08.01.00:002][  0]TLLua: Display: [Game] ItemChange@ ProtoName=PickItem end
+[2026.07.17-08.02.00:000][  0]TLLua: Display: [Game] ItemChange@ ProtoName=BuySkill start
+[2026.07.17-08.02.00:001][  0]TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 101 SlotId = 0 ConfigBaseId = 7401 Num = 1
+[2026.07.17-08.02.00:002][  0]TLLua: Display: [Game] ItemChange@ ProtoName=BuySkill end
+[2026.07.17-08.03.00:000][  0]TLLua: Display: [Game] ItemChange@ ProtoName=LockOrUnlockItem start
+[2026.07.17-08.03.00:001][  0]TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 103 SlotId = 5 ConfigBaseId = 6001 Num = 3
+[2026.07.17-08.03.00:002][  0]TLLua: Display: [Game] ItemChange@ ProtoName=LockOrUnlockItem end
+[2026.07.17-08.04.00:000][  0]TLLua: Display: [Game] ItemChange@ ProtoName=PutOn start
+[2026.07.17-08.04.00:001][  0]TLLua: Display: [Game] BagMgr@:Modfy BagItem PageId = 101 SlotId = 1 ConfigBaseId = 7032 Num = 1
+[2026.07.17-08.04.00:002][  0]TLLua: Display: [Game] ItemChange@ ProtoName=PutOn end
+"""
+        log_path = tmpdir / "ss13_test.log"
+        log_path.write_text(log_content)
+
+        deltas = []
+        collector = Collector(
+            db=db,
+            log_path=log_path,
+            on_delta=lambda d: deltas.append(d),
+            player_info=TEST_PLAYER_INFO,
+        )
+        collector.initialize()
+        collector.process_file(from_beginning=True)
+
+        # Only the PickItem block should have produced a delta
+        assert len(deltas) == 1
+        assert deltas[0].proto_name == "PickItem"
+        assert deltas[0].delta == 100  # 600 - 500
+        assert deltas[0].context.name == "PICK_ITEMS"
+
+        # The excluded protos still updated slot state
+        skill_state = repo.get_slot_state(101, 0)
+        assert skill_state is not None
+        assert skill_state.config_base_id == 7401
+        lock_state = repo.get_slot_state(103, 5)
+        assert lock_state is not None
+        assert lock_state.num == 3
+
     def test_init_bag_updates_state_without_delta(self, test_env):
         """Test that InitBagData events update slot state but don't create deltas."""
         db = test_env["db"]

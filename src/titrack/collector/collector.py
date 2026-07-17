@@ -31,7 +31,11 @@ from titrack.parser.exchange_parser import (
     calculate_reference_price,
 )
 from titrack.parser.player_parser import PlayerInfo, get_effective_player_id
-from titrack.parser.patterns import EXCLUDED_PROTO_NAMES, MAP_COST_PROTO_NAMES
+from titrack.parser.patterns import (
+    EXCLUDED_PROTO_NAMES,
+    MAP_COST_PROTO_NAMES,
+    PICKUP_PROTO_NAMES,
+)
 from titrack.data.inventory import EXCLUDED_PAGES, is_gear_excluded
 from titrack.data.zones import is_sandlord_zone
 
@@ -328,7 +332,7 @@ class Collector:
     def _handle_context_marker(self, event: ParsedContextMarker) -> None:
         """Handle ItemChange context markers."""
         if event.is_start:
-            if event.proto_name == "PickItems":
+            if event.proto_name in PICKUP_PROTO_NAMES:
                 self._current_context = EventContext.PICK_ITEMS
             elif event.proto_name in MAP_COST_PROTO_NAMES:
                 self._current_context = EventContext.MAP_OPEN

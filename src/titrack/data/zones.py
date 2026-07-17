@@ -50,6 +50,9 @@ ZONE_NAMES = {
     # Boss zones
     "YJ_XiuShiShenYuan": "Rusted Abyss",
 
+    # SS13 Afterlight campaign (chapter 4 story instance)
+    "LiMingShengSuo": "Dawn Sanctuary",
+
     # Ruins of Aeterna (Season 10 content)
     "CC1_SiWangMiCheng": "Ruins of Aeterna: Boundless",
     "XueYuRongLu": "The Frozen Canvas",
