@@ -55,9 +55,9 @@ SEASON_NAMES = {
     # Historical seasons
     1301: "SS11 Vorax",
     1401: "SS12 Lunaria",
-    # Current season (as of Jul 2026). ID follows the +100/season pattern
-    # (1301 -> 1401 -> 1501); asset names use the internal S15 prefix.
     1501: "SS13 Afterlight",
+    # Current season (as of Oct 2026). Confirmed from a live SS14 log.
+    1601: "SS14 Tartarus",
 }
 
 

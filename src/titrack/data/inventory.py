@@ -107,7 +107,7 @@ def is_gear_excluded(page_id: int, config_base_id: Optional[int] = None) -> bool
 
 # type_cn values for beacon and compass items
 SUPPLY_BEACON_TYPE_CN = "信标"
-# Regular compasses plus seasonal compasses (e.g. SS13 Wicks, SS12 Lunar Stones) —
+# Regular compasses plus seasonal compasses (e.g. SS14 Shackles, SS13 Wicks) —
 # both are consumed via Spv3Open and should trigger low-supply alerts.
 SUPPLY_COMPASS_TYPE_CNS = ("罗盘", "赛季罗盘")
 

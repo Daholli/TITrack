@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SS14 Tartarus readiness**: SeasonId 1601 now displays as "SS14 Tartarus" in the dashboard header. Verified against a live SS14 log: SeasonId 1601, the `TLLua:`/`TLShipping:` prefixes, and the `PickItem` pickup proto are unchanged from SS13.
+- **SS14 + SS13 backfill items (256 new)**: Added the SS14 Shackle seasonal compasses (Darkiron/Mercury/Redgold), Evernight Afterlight Compass, Full Load Outlaw Compass, all 135 tiers of the tradeable follower skills (81 Tartarus + 54 Origin Tartarus), 16 follower Recommendation Letters, Tempering Medals (regular + Origin), and the SS14 active/support skills (Voltaic Ripple, Psionic Missile, Homing Frost Bolt, Forking Thunder, Moon's Dawn, Blazing Meteor, Hound's Fangs and their Magnificent/Noble supports) and legendary gear. Backfilled SS13 Afterlight skills and supports (Thornfield, Tidewell, Fallen Star, Storm Field, Nether Grasp, Commanding Warcry, Agony Dew, Prism Butterfly Distillate and their Magnificent/Noble supports) and legendary gear that were missed in July. Seed count: 1935 → 2191.
+
+### Changed
+- **Recycled compass IDs updated**: SS13's Wicks (10320–10322) became the permanent Afterlight Compass line (Afterlight / Phantom / All-Evil), Valiant War Compass (10122) became Wild War Compass, Lunar Stele Compass (10302) is now "Lunar Stele Lunaria Compass", and legendary 113252 was recycled from "Mother Goddess' Paddock" to "Crimson Gash".
+- **Seed revisions are now tracked per revision**: The seed's flat `revised_ids` list became `revisions` (revision → changed IDs). A database several revisions behind now picks up every intermediate rename, and one only a revision behind no longer re-overwrites rows fixed in a revision it already applied.
+
 ---
 
 ## [0.5.10] - 2026-07-17

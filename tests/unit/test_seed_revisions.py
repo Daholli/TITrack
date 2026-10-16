@@ -116,3 +116,58 @@ def test_non_revised_entries_untouched(seeded_db):
     seeded_db._apply_seed_revisions(cursor)
 
     assert _get_name(seeded_db, 200) == "Renamed By User"
+
+
+MULTI_SEED = {
+    "meta": {
+        "revision": 2,
+        "revisions": {"1": ["100"], "2": ["200"]},
+    },
+    "items": [
+        {**SEED["items"][0]},
+        {**SEED["items"][1], "name_en": "Afterlight Compass"},
+    ],
+}
+
+
+@pytest.fixture
+def multi_db(monkeypatch):
+    """Database wired to a seed with per-revision id lists."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        seed_path = Path(tmpdir) / "seed.json"
+        seed_path.write_text(json.dumps(MULTI_SEED, ensure_ascii=False), encoding="utf-8")
+        monkeypatch.setattr(
+            "titrack.config.paths.get_items_seed_path", lambda: seed_path
+        )
+        database = Database(Path(tmpdir) / "test.db", auto_seed=True)
+        database.connect()
+        yield database
+        database.close()
+
+
+def _stale(db, applied):
+    db.execute("UPDATE items SET name_en = 'Stale 100' WHERE config_base_id = 100")
+    db.execute("UPDATE items SET name_en = 'Stale 200' WHERE config_base_id = 200")
+    db.execute(
+        "UPDATE settings SET value = ? WHERE key = 'items_seed_revision'", (applied,)
+    )
+
+
+def test_multiple_revisions_behind_applies_all(multi_db):
+    # A database that skipped a release picks up every intermediate rename
+    _stale(multi_db, "0")
+    multi_db._apply_seed_revisions(multi_db._connection.cursor())
+
+    assert _get_name(multi_db, 100) == "Lunaria Compass"
+    assert _get_name(multi_db, 200) == "Afterlight Compass"
+    assert _get_setting(multi_db, "items_seed_revision") == "2"
+
+
+def test_already_applied_revision_not_reapplied(multi_db):
+    # Revision 1 was applied earlier (and the user since edited id 100);
+    # moving to revision 2 refreshes only revision 2's ids
+    _stale(multi_db, "1")
+    multi_db._apply_seed_revisions(multi_db._connection.cursor())
+
+    assert _get_name(multi_db, 100) == "Stale 100"
+    assert _get_name(multi_db, 200) == "Afterlight Compass"

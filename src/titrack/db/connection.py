@@ -299,10 +299,13 @@ class Database:
         the seed (Torchlight recycles seasonal-compass ConfigBaseIds each season,
         e.g. SS12 Lunar Stones -> permanent Lunaria Compasses) never reach
         existing databases. The seed meta carries a monotonically increasing
-        "revision" plus the list of "revised_ids" affected; when the stored
-        revision is behind, those rows are re-written from the seed and the new
-        revision is recorded. Rows outside revised_ids are untouched, so user
-        edits to other items are preserved.
+        "revision" plus "revisions", a map of revision number -> ids changed in
+        that revision (legacy seeds use a flat "revised_ids" list for the
+        current revision). When the stored revision is behind, the ids from
+        every newer revision are re-written from the seed and the new revision
+        is recorded. Rows outside those revisions are untouched, so user edits
+        to other items (or to items fixed in an already-applied revision) are
+        preserved.
         """
         try:
             from titrack.config.paths import get_items_seed_path
@@ -326,7 +329,15 @@ class Database:
             if applied >= revision:
                 return
 
-            revised_ids = {str(i) for i in meta.get("revised_ids", [])}
+            revisions = meta.get("revisions")
+            if revisions is None:
+                revisions = {str(revision): meta.get("revised_ids", [])}
+            revised_ids = {
+                str(i)
+                for rev, ids in revisions.items()
+                if int(rev) > applied
+                for i in ids
+            }
             updated = 0
             for item in data.get("items", []):
                 if str(item["id"]) in revised_ids:
