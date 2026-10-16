@@ -427,6 +427,9 @@ In development mode (non-frozen), logs also output to console.
 ### Collector
 - `GET /api/collector/diagnose` - Diagnostics for the character-detection panel: current log path, exists/mtime, "looks like TI log" heuristic, tailer position, whether player lines have been seen, and other `UE_game.log` files found at known Steam/standalone install paths (for dual-client detection)
 
+### Donations
+- `GET /api/donations/progress` - Current month's Ko-fi total and goal (`available: false` when offline/unconfigured; cached 15 min)
+
 ### Other
 - `GET /api/status` - Server status
 
@@ -828,6 +831,17 @@ Cloud sync requires a Supabase backend. The backend is NOT configured by default
 4. Or update the defaults in `src/titrack/sync/client.py`
 
 Install the Supabase SDK: `pip install titrack[cloud]`
+
+## Donation Goal Bar
+
+The footer's Ko-fi link ("Help cover server costs") shows progress toward the monthly server-cost goal, fetched once when the dashboard loads.
+
+Ko-fi has no public read API and its site returns a Cloudflare 403 to non-browser clients, so the data flows through Supabase:
+
+1. Ko-fi webhook → Edge Function `supabase/functions/kofi-webhook` (deployed with `--no-verify-jwt`; authenticates via the payload's `verification_token` against the `KOFI_VERIFICATION_TOKEN` secret)
+2. Function upserts into `kofi_donations` (migration `005_kofi_donations.sql`; RLS on, no policies; stores only amount/currency/type/timestamp — no donor details). Ko-fi test payloads (transaction id `00000000-1111-2222-3333-444444444444`) are stored with `is_test = true` and excluded.
+3. RPC `get_donation_progress()` returns `month_total`, `goal`, `currency`, `month_start` for the current UTC calendar month. **The goal ($100) is defined in the RPC** — change it with `CREATE OR REPLACE`, no app release needed.
+4. `GET /api/donations/progress` calls the RPC via `urllib` (5s timeout, 15 min cache, 60s on failure); frontend `loadDonationGoal()` in `app.js` renders the bar and hides it when `available` is false.
 
 ## Known Limitations / TODO
 

@@ -1161,6 +1161,55 @@ tr.nightmare .zone-name {
     color: #ff5e5b;
 }
 
+.donation-goal {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 4px;
+}
+
+.donation-goal.hidden {
+    display: none;
+}
+
+.donation-goal-track {
+    width: 80px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.donation-goal-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #ff5e5b;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.donation-goal-text {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.donation-goal-text.below-goal {
+    color: var(--negative);
+    font-weight: 600;
+}
+
+.donation-goal-suffix {
+    margin-left: -2px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+    .donation-goal-suffix {
+        display: none;
+    }
+}
+
 .update-btn {
     background: none;
     border: 1px solid var(--border);

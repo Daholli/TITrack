@@ -2942,6 +2942,30 @@ async function triggerUpdateInstall() {
     }
 }
 
+// --- Donation Goal ---
+
+async function loadDonationGoal() {
+    const progress = await fetchJson('/donations/progress');
+    const goalEl = document.getElementById('donation-goal');
+    if (!progress || !progress.available || !(progress.goal > 0)) {
+        goalEl.classList.add('hidden');
+        return;
+    }
+
+    const symbol = progress.currency === 'USD' ? '$' : '';
+    const fmt = (v) => `${symbol}${Math.round(v).toLocaleString()}`;
+    const pct = Math.min(100, (progress.month_total / progress.goal) * 100);
+    const month = new Date().toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+
+    document.getElementById('donation-goal-fill').style.width = `${pct}%`;
+    const textEl = document.getElementById('donation-goal-text');
+    textEl.textContent = `${fmt(progress.month_total)} / ${fmt(progress.goal)}`;
+    textEl.classList.toggle('below-goal', progress.month_total < progress.goal);
+    goalEl.closest('.kofi-link').title =
+        `${fmt(progress.month_total)} of the ${fmt(progress.goal)} monthly server-cost goal raised in ${month}. Click to support on Ko-fi.`;
+    goalEl.classList.remove('hidden');
+}
+
 function renderVersion(status) {
     const versionEl = document.getElementById('app-version');
     const badgeEl = document.getElementById('update-badge');
@@ -3234,6 +3258,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if running in browser fallback mode
     await checkBrowserMode();
+
+    // Monthly donation goal (not awaited: a slow or offline backend must not delay startup)
+    loadDonationGoal();
 
     // Fetch and display version info
     const versionStatus = await fetchUpdateStatus();
