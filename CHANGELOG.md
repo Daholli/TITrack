@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.12] - 2026-10-18
+
+### Zone Names
+- **SS14 Tartarus zones**: Added the Tartarus in Riot prison map (`ZhongZuiDiYu`), which previously showed as "ZhongZuiDiYu".
+- **SS14 Thunder Wastes and Voidlands maps**: SS14 added a family of new maps under `JH_YWMD_00001`–`00007`, each a different zone, which all showed as "JH_YWMD_". Thunder Wastes: Chamber of Confusion, Place of Repentance, Ascetic Gallery, Ascension Testing Ground. Voidlands: Road of Purgation, Corridor of Disorder, and Yesterday Chamber (moved to a new map). Existing runs pick up the new names automatically.
+
+### Fixed
+- **Mundane Palace no longer shows as a hideout**: Voidlands - Mundane Palace runs were labeled "Hideout - Sacred Court Manor" because the hideout's zone name matched first. The runs and their loot were always counted correctly; only the label was wrong.
+- **Grimwind Woods region label**: Some Glacial Abyss Grimwind Woods runs showed as plain "Grimwind Woods" because their LevelId suffix shifts between Timemark tiers. They now show "Glacial Abyss - Grimwind Woods".
+
+---
+
 ## [0.5.11] - 2026-10-16
 
 ### Added

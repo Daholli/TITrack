@@ -3,6 +3,11 @@
 # Map internal zone path patterns to English display names
 # Add new mappings as you encounter zones
 ZONE_NAMES = {
+    # First substring match wins, so entries with number suffixes must come
+    # before generic ones that share a prefix (this map's path contains the
+    # Sacred Court Manor hideout's name)
+    "DD_ShengTingZhuangYuan000": "Voidlands - Mundane Palace",
+
     # Hideouts / Hubs
     "XZ_YuJinZhiXiBiNanSuo": "Hideout - Ember's Rest",
     "DD_ShengTingZhuangYuan": "Hideout - Sacred Court Manor",
@@ -10,9 +15,7 @@ ZONE_NAMES = {
     # Sandlord zones (trackable - players earn FE from airship/glider rewards)
     "YunDuanLvZhou": "Cloud Oasis (Sandlord)",
 
-    # Voidlands (entries with number suffixes must come before generic ones)
-    # KD_YuanSuKuangDong000 differentiated by LevelId suffix
-    "DD_ShengTingZhuangYuan000": "Voidlands - Mundane Palace",
+    # Voidlands: KD_YuanSuKuangDong000 differentiated by LevelId suffix
 
     # Blistering Lava Sea
     "KD_YuanSuKuangDong": "Blistering Lava Sea - Elemental Mine",
@@ -53,6 +56,9 @@ ZONE_NAMES = {
     # SS13 Afterlight campaign (chapter 4 story instance)
     "LiMingShengSuo": "Dawn Sanctuary",
 
+    # SS14 Tartarus (LevelId 235501, LevelType 28)
+    "ZhongZuiDiYu": "Tartarus in Riot",
+
     # Ruins of Aeterna (Season 10 content)
     "CC1_SiWangMiCheng": "Ruins of Aeterna: Boundless",
     "XueYuRongLu": "The Frozen Canvas",
@@ -88,6 +94,11 @@ ZONE_NAMES = {
     "DD_DiDuTingYuan000": "Thunder Wastes - Sacred Courtyard",
     "YJ_LiuJinJieQu": "Thunder Wastes - Gallery of Moon",
     "LeiYingJiDian": "Thunder Wastes - Summit of Thunder",
+    # SS14: JH_YWMD_xxxxx is a family of new zones, one per number
+    "JH_YWMD_00003": "Thunder Wastes - Chamber of Confusion",
+    "JH_YWMD_00004": "Thunder Wastes - Place of Repentance",
+    "JH_YWMD_00005": "Thunder Wastes - Ascetic Gallery",
+    "JH_YWMD_00007": "Thunder Wastes - Ascension Testing Ground",
 
     # Rift of Dimensions
     "LieXiKongJing": "Rift of Dimensions",
@@ -128,6 +139,10 @@ ZONE_NAMES = {
     "YJ_YongZhouHuiLang": "Voidlands - Gallery of Stars",
     "JH_YinNiShengTang": "Voidlands - Yesterday Chamber",
     "DiaoLingWangYu": "Voidlands - Dreamless Abyss",
+    # SS14 JH_YWMD zones (Yesterday Chamber moved here from JH_YinNiShengTang)
+    "JH_YWMD_00001": "Voidlands - Yesterday Chamber",
+    "JH_YWMD_00002": "Voidlands - Road of Purgation",
+    "JH_YWMD_00006": "Voidlands - Corridor of Disorder",
 }
 
 # Ambiguous zones that appear in multiple regions with same path
@@ -137,6 +152,7 @@ AMBIGUOUS_ZONES = {
     # Zone path pattern -> {suffix: "Region - Zone Name"}
     "YL_BeiFengLinDi": {  # Grimwind Woods
         6: "Glacial Abyss - Grimwind Woods",
+        7: "Glacial Abyss - Grimwind Woods",  # suffix drifts by Timemark tier
         54: "Voidlands - Grimwind Woods",
     },
     "KD_YuanSuKuangDong000": {  # Elemental Mine (with 000 suffix in path)
